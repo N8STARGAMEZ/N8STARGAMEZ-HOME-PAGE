@@ -1,0 +1,3169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>N8STARGAMEZ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0b0b0f;
+      --surface: #13131a;
+      --border: #222230;
+      --accent: #e8ff00;
+      --text: #e0e0f0;
+      --muted: #555570;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+
+    }
+
+
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.4;
+    }
+
+    header {
+      padding: 60px 48px 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    .site-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 10vw, 7rem);
+      letter-spacing: 0.03em;
+      line-height: 1;
+      color: #fff;
+    }
+    .site-title .star {
+      color: var(--accent);
+      display: inline-block;
+      animation: starSpin 6s linear infinite;
+    }
+    @keyframes starSpin {
+      from { transform: rotate(0deg); } to { transform: rotate(360deg); }
+    }
+
+    .tagline {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .header-line {
+      margin-top: 36px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent) 0%, transparent 60%);
+    }
+
+    .game-count {
+      display: inline-block;
+      margin-top: 28px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 5px 14px;
+      border-radius: 2px;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2px;
+      padding: 32px 48px 80px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      aspect-ratio: 4/3;
+      transition: border-color 0.2s;
+      animation: cardIn 0.5s ease both;
+    }
+    .card:nth-child(1) { animation-delay: 0.05s; }
+    .card:nth-child(2) { animation-delay: 0.12s; }
+    .card:nth-child(3) { animation-delay: 0.19s; }
+    .card:nth-child(4) { animation-delay: 0.26s; }
+    .card:nth-child(5) { animation-delay: 0.33s; }
+    .card:nth-child(6) { animation-delay: 0.40s; }
+    .card:nth-child(7) { animation-delay: 0.47s; }
+    .card:nth-child(8) { animation-delay: 0.54s; }
+
+    /* Block Fall special styling */
+    .card.blockfall .card-name { color: #a78bfa; }
+    .card.blockfall:hover { border-color: #a78bfa; }
+    .card.blockfall .card-play { background: #a78bfa; color: #fff; }
+
+    /* Chess special styling */
+    .card.chess .card-name { color: #f5c842; }
+    .card.chess:hover { border-color: #f5c842; }
+    .card.chess .card-play { background: #f5c842; color: #000; }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:hover { border-color: var(--accent); z-index: 2; }
+
+    /* Scanlines */
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px
+      );
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .card-wash {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 0;
+    }
+    .card:hover .card-wash { opacity: 1; }
+
+    /* Canvas for animated backgrounds */
+    .card-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .card-content {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 24px;
+      z-index: 5;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+    }
+
+    .card-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      opacity: 0.6;
+    }
+
+    .card-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: 0.05em;
+      line-height: 1;
+      color: #fff;
+    }
+
+    .card-desc {
+      margin-top: 6px;
+      font-size: 0.8rem;
+      color: rgba(224,224,240,0.55);
+      line-height: 1.4;
+    }
+
+    .card-play {
+      position: absolute;
+      top: 20px; right: 20px;
+      z-index: 6;
+      background: var(--accent);
+      color: #000;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      padding: 6px 14px;
+      border-radius: 2px;
+      opacity: 0;
+      transform: translateY(-6px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .card:hover .card-play { opacity: 1; transform: translateY(0); }
+
+    /* Hollow Creek special styling */
+    .card.horror .card-name { color: #c0392b; }
+    .card.horror:hover { border-color: #c0392b; }
+    .card.horror .card-play { background: #c0392b; color: #fff; }
+
+    /* Aero City special styling */
+    .card.aerocity .card-name { color: #38bdf8; }
+    .card.aerocity:hover { border-color: #38bdf8; }
+    .card.aerocity .card-play { background: #38bdf8; color: #000; }
+
+    /* Tower Defense special styling */
+    .card.towerdefense .card-name { color: #f0b830; }
+    .card.towerdefense:hover { border-color: #f0b830; }
+    .card.towerdefense .card-play { background: #f0b830; color: #1a0e08; }
+    .card:nth-child(9) { animation-delay: 0.61s; }
+
+    /* Star Spud special styling */
+    .card.starspud .card-name { color: #f43f5e; }
+    .card.starspud:hover { border-color: #f43f5e; }
+    .card.starspud .card-play { background: #f43f5e; color: #fff; }
+    .card:nth-child(10) { animation-delay: 0.68s; }
+
+    /* Casino special styling */
+    .card.casino .card-name { color: #c9a84c; }
+    .card.casino:hover { border-color: #c9a84c; }
+    .card.casino .card-play { background: #c9a84c; color: #000; }
+    .card:nth-child(11) { animation-delay: 0.75s; }
+
+
+    /* Party Vault special styling */
+    .card.partyvault .card-name { color: #ff4fc8; }
+    .card.partyvault:hover { border-color: #ff4fc8; }
+    .card.partyvault .card-play { background: linear-gradient(135deg, #ff4fc8, #a87fff); color: #fff; }
+    .card:nth-child(12) { animation-delay: 0.82s; }
+
+    /* Sandboxels special styling */
+    .card.sandboxels .card-name { color: #f97316; }
+    .card.sandboxels:hover { border-color: #f97316; }
+    .card.sandboxels .card-play { background: linear-gradient(135deg, #f97316, #facc15); color: #000; }
+    .card:nth-child(13) { animation-delay: 0.89s; }
+
+    /* Flapsy Bird special styling */
+    .card.flapsybird .card-name { color: #FFEB3B; }
+    .card.flapsybird:hover { border-color: #FFEB3B; }
+    .card.flapsybird .card-play { background: linear-gradient(135deg, #FFEB3B, #FF6B35); color: #1a0e00; }
+    .card:nth-child(14) { animation-delay: 0.96s; }
+
+    footer {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* Nexus Chat */
+    .card.nexus .card-name { color: #6c8fff; }
+    .card.nexus:hover { border-color: #6c8fff; }
+    .card.nexus .card-play { background: linear-gradient(135deg,#6c8fff,#a87fff); color: #fff; }
+
+    /* PixelPal */
+    .card.pixelpal .card-name { color: #ff6b6b; }
+    .card.pixelpal:hover { border-color: #ff6b6b; }
+    .card.pixelpal .card-play { background: linear-gradient(135deg, #ff6b6b, #ffd93d); color: #1a0e08; }
+
+    /* Apps section */
+    .apps-header {
+      padding: 0 48px 28px;
+      position: relative;
+      z-index: 10;
+    }
+    .apps-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .apps-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 6vw, 4.5rem);
+      letter-spacing: 0.03em;
+      line-height: 1;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .apps-line {
+      height: 1px;
+      background: linear-gradient(90deg, #6c8fff 0%, transparent 60%);
+      margin-bottom: 10px;
+    }
+    .apps-count {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #6c8fff;
+      border: 1px solid #6c8fff;
+      padding: 5px 14px;
+      border-radius: 2px;
+    }
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2px;
+      padding: 32px 48px 80px;
+      position: relative;
+      z-index: 10;
+    }
+
+
+    /* ════════════════════════════════════════════
+       CARTOON THEME VARIABLES & OVERRIDES
+    ════════════════════════════════════════════ */
+
+    /* Wipe overlay */
+    #theme-wipe {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      clip-path: circle(0% at 95% 5%);
+      transition: clip-path 0.65s cubic-bezier(0.77, 0, 0.18, 1);
+    }
+    #theme-wipe.wipe-in {
+      clip-path: circle(150% at 95% 5%);
+    }
+    #theme-wipe.wipe-out {
+      clip-path: circle(0% at 95% 5%);
+    }
+
+    /* Theme toggle button */
+    #theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 24px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    #theme-toggle:hover { transform: translateY(-2px); }
+    #theme-toggle:active { transform: translateY(1px); }
+
+    /* Tech style for the button */
+    body:not(.cartoon) #theme-toggle {
+      background: #13131a;
+      color: #e8ff00;
+      border: 1px solid #e8ff00;
+      border-radius: 2px;
+      box-shadow: 0 0 12px rgba(232,255,0,0.2);
+    }
+    body:not(.cartoon) #theme-toggle:hover {
+      box-shadow: 0 0 20px rgba(232,255,0,0.35);
+    }
+    .toggle-icon { font-size: 1.1rem; transition: transform 0.4s; }
+    #theme-toggle:hover .toggle-icon { transform: rotate(20deg) scale(1.15); }
+
+    /* ── CARTOON THEME ── */
+    body.cartoon {
+      --bg: #FFF9F0;
+      --surface: #FFFFFF;
+      --border: #E8DDD0;
+      --accent: #FF6B35;
+      --text: #2D2D2D;
+      --muted: #9A8F8A;
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* Cartoon button */
+    body.cartoon #theme-toggle {
+      background: #FF6B35;
+      color: #fff;
+      border-radius: 50px;
+      border: 3px solid #2D2D2D;
+      box-shadow: 4px 4px 0 #2D2D2D;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+    }
+    body.cartoon #theme-toggle:hover {
+      transform: translateY(-3px);
+      box-shadow: 4px 7px 0 #2D2D2D;
+    }
+    body.cartoon #theme-toggle:active {
+      transform: translateY(2px);
+      box-shadow: 2px 2px 0 #2D2D2D;
+    }
+
+    /* Noise grain — hidden in cartoon */
+    body.cartoon::after { display: none; }
+
+    /* Header */
+    body.cartoon header { padding-top: 80px; }
+    body.cartoon .site-title {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      color: #2D2D2D;
+      text-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+    }
+    body.cartoon .site-title .star { color: #FF6B35; }
+    body.cartoon .tagline {
+      font-family: 'Nunito', sans-serif;
+      color: #9A8F8A;
+      letter-spacing: 0.1em;
+    }
+    body.cartoon .header-line {
+      background: linear-gradient(90deg, #FF6B35 0%, transparent 60%);
+    }
+    body.cartoon .game-count {
+      background: #FF6B35;
+      color: #fff;
+      border: 3px solid #2D2D2D;
+      border-radius: 50px;
+      box-shadow: 3px 3px 0 #2D2D2D;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    /* Cards */
+    body.cartoon .card {
+      border-radius: 20px;
+      border: 3px solid #2D2D2D;
+      box-shadow: 6px 6px 0 #2D2D2D;
+      overflow: hidden;
+      transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+    }
+    body.cartoon .card:hover {
+      transform: translateY(-5px) rotate(-0.5deg);
+      box-shadow: 8px 10px 0 #2D2D2D;
+      border-color: #FF6B35;
+      z-index: 2;
+    }
+    body.cartoon .card::before { display: none; } /* no scanlines */
+    body.cartoon .card-name {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: 1.7rem;
+      letter-spacing: -0.01em;
+    }
+    body.cartoon .card-tag {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      opacity: 0.75;
+    }
+    body.cartoon .card-desc {
+      font-family: 'Nunito', sans-serif;
+      color: rgba(255,255,255,0.75);
+    }
+    body.cartoon .card-play {
+      border-radius: 50px;
+      border: 2px solid rgba(0,0,0,0.25);
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    }
+
+    /* Grids gap */
+    body.cartoon .games-grid,
+    body.cartoon .apps-grid { gap: 16px; padding: 32px 40px 80px; }
+
+    /* Apps section */
+    body.cartoon .apps-title { font-family: 'Nunito', sans-serif; font-weight: 900; color: #2D2D2D; }
+    body.cartoon .apps-label { font-family: 'Nunito', sans-serif; color: #9A8F8A; }
+    body.cartoon .apps-line { background: linear-gradient(90deg, #FF6B35 0%, transparent 60%); }
+    body.cartoon .apps-count {
+      background: #6c8fff;
+      color: #fff;
+      border: 3px solid #2D2D2D;
+      border-radius: 50px;
+      box-shadow: 3px 3px 0 #2D2D2D;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    /* Footer */
+    body.cartoon footer {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      color: #9A8F8A;
+      border-color: #E8DDD0;
+      letter-spacing: 0.05em;
+    }
+
+    body.cartoon { background-image: radial-gradient(circle, #E8DDD0 1px, transparent 1px); background-size: 28px 28px; }
+
+  </style>
+</head>
+<body>
+
+<!-- WIPE OVERLAY -->
+<div id="theme-wipe"></div>
+
+<!-- THEME TOGGLE BUTTON -->
+<button id="theme-toggle" onclick="toggleTheme()" title="Switch theme">
+  <span class="toggle-icon" id="toggle-icon">🎨</span>
+  <span id="toggle-label">Cartoon</span>
+</button>
+
+<header>
+    <h1 class="site-title">N8<span class="star">★</span>STARGAMEZ</h1>
+    <p class="tagline">Browser Games · No Install · Play Instantly</p>
+    <div class="header-line"></div>
+    <span class="game-count">14 Games Available</span>
+  </header>
+
+  <div class="games-grid">
+
+    <!-- GeoSoccer -->
+    <a class="card" href="https://n8stargamez.github.io/GeoSoccer/" id="card-geo">
+      <div class="card-wash" style="background: radial-gradient(ellipse at bottom left, rgba(0,200,100,0.15), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-geo"></canvas>
+      <div class="card-play">▶ PLAY</div>
+      <div class="card-content">
+        <div class="card-tag">Top-Down · AI Opponent</div>
+        <div class="card-name">GeoSoccer</div>
+        <div class="card-desc">Drive your car, slam the ball, score goals. Boost to outpace the AI.</div>
+      </div>
+    </a>
+
+    <!-- Snake -->
+    <a class="card" href="https://n8stargamez.github.io/Serpent" id="card-snake">
+      <div class="card-wash" style="background: radial-gradient(ellipse at bottom left, rgba(0,255,80,0.12), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-snake"></canvas>
+      <div class="card-play">▶ PLAY</div>
+      <div class="card-content">
+        <div class="card-tag">Classic · Arcade</div>
+        <div class="card-name">Snake</div>
+        <div class="card-desc">Eat, grow, don't crash. The classic never gets old.</div>
+      </div>
+    </a>
+
+    <!-- Tactical Ops -->
+    <a class="card" href="https://n8stargamez.github.io/Tactial-Ops" id="card-tac">
+      <div class="card-wash" style="background: radial-gradient(ellipse at bottom left, rgba(255,80,0,0.12), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-tac"></canvas>
+      <div class="card-play">▶ PLAY</div>
+      <div class="card-content">
+        <div class="card-tag">Shooter · Action</div>
+        <div class="card-name">Tactical Ops</div>
+        <div class="card-desc">Top-down shooter. Move fast, aim faster, stay alive.</div>
+      </div>
+    </a>
+
+    <!-- Hollow Creek -->
+    <a class="card horror" href="https://n8stargamez.github.io/Hollow-Creek" id="card-horror">
+      <div class="card-wash" style="background: radial-gradient(ellipse at bottom left, rgba(120,0,0,0.2), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-horror"></canvas>
+      <div class="card-play">▶ PLAY</div>
+      <div class="card-content">
+        <div class="card-tag">Horror · Survival</div>
+        <div class="card-name">Hollow Creek</div>
+        <div class="card-desc">Something is out there in the dark. Don't make a sound.</div>
+      </div>
+    </a>
+
+    <!-- Orbie -->
+    <a class="card" href="https://n8stargamez.github.io/Orbie" id="card-orbie">
+      <div class="card-wash" style="background: radial-gradient(ellipse at bottom left, rgba(255,225,53,0.13), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-orbie"></canvas>
+      <div class="card-play">▶ PLAY</div>
+      <div class="card-content">
+        <div class="card-tag">Arcade · Maze</div>
+        <div class="card-name">Orbie</div>
+        <div class="card-desc">Eat every dot, dodge the ghosts. Classic maze action with custom skins and maps.</div>
+      </div>
+    </a>
+
+    <!-- Block Fall -->
+    <a class="card blockfall" href="https://n8stargamez.github.io/Block-Fall/" id="card-blockfall">
+      <div class="card-wash" style="background: radial-gradient(ellipse at top right, rgba(167,139,250,0.18), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-blockfall"></canvas>
+      <div class="card-play">▶ PLAY</div>
+      <div class="card-content">
+        <div class="card-tag">Puzzle · Casual</div>
+        <div class="card-name">Block Fall</div>
+        <div class="card-desc">Colorful blocks tumble down. Stack them smart, clear the lines, beat your best score.</div>
+      </div>
+    </a>
+
+    <!-- Chess -->
+    <a class="card chess" href="https://n8stargamez.github.io/Chess/" id="card-chess" target="_blank" rel="noopener">
+      <div class="card-wash" style="background: radial-gradient(ellipse at top left, rgba(245,200,66,0.15), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-chess"></canvas>
+      <div class="card-play">▶ PLAY</div>
+      <div class="card-content">
+        <div class="card-tag">Strategy · vs AI or 2P</div>
+        <div class="card-name">Chess</div>
+        <div class="card-desc">Full chess vs a smart AI or a friend. Minimax engine, three difficulty levels.</div>
+      </div>
+    </a>
+
+    <!-- Aero City -->
+    <a class="card aerocity" href="https://n8stargamez.github.io/Aero-City/" id="card-aerocity" target="_blank" rel="noopener">
+      <div class="card-wash" style="background: radial-gradient(ellipse at bottom left, rgba(56,189,248,0.15), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-aerocity"></canvas>
+      <div class="card-play">▶ PLAY</div>
+      <div class="card-content">
+        <div class="card-tag">City Builder · Strategy</div>
+        <div class="card-name">Aero City</div>
+        <div class="card-desc">Build a gleaming glass city from scratch. Manage power, water, and happiness as your population booms.</div>
+      </div>
+    </a>
+
+    <!-- Tower Defense -->
+    <a class="card towerdefense" href="https://n8stargamez.github.io/Tower-Defense/" id="card-towerdefense" target="_blank" rel="noopener">
+      <div class="card-wash" style="background: radial-gradient(ellipse at bottom left, rgba(200,148,26,0.18), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-towerdefense"></canvas>
+      <div class="card-play">▶ PLAY</div>
+      <div class="card-content">
+        <div class="card-tag">Strategy · Tower Defense</div>
+        <div class="card-name">Castle's Last Stand</div>
+        <div class="card-desc">Build towers, hold the line. Waves of goblins, orcs and dragons march on your castle gates.</div>
+      </div>
+    </a>
+
+    <!-- Star Spud -->
+    <a class="card starspud" href="https://n8stargamez.github.io/Star-Spud/" id="card-starspud" target="_blank" rel="noopener">
+      <div class="card-wash" style="background: radial-gradient(ellipse at bottom left, rgba(244,63,94,0.18), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-starspud"></canvas>
+      <div class="card-play">▶ PLAY</div>
+      <div class="card-content">
+        <div class="card-tag">Survivor · Auto-Shooter · 1-2 Players</div>
+        <div class="card-name">Star Spud</div>
+        <div class="card-desc">Survive infinite waves, collect weapons, unlock perks. Solo or couch co-op chaos.</div>
+      </div>
+    </a>
+
+
+    <!-- Diamond Crown Casino -->
+    <a class="card casino" href="https://n8stargamez.github.io/Casino/" id="card-casino" target="_blank" rel="noopener">
+      <div class="card-wash" style="background: radial-gradient(ellipse at bottom left, rgba(201,168,76,0.18), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-casino"></canvas>
+      <div class="card-play">▶ PLAY</div>
+      <div class="card-content">
+        <div class="card-tag">Casino · 7 Games · Luck &amp; Strategy</div>
+        <div class="card-name">Diamond Crown Casino</div>
+        <div class="card-desc">Slots, Roulette, Blackjack, Poker, Horse Racing, Baccarat &amp; Uno. Bet your chips and beat the house.</div>
+      </div>
+    </a>
+
+    <!-- Party Vault -->
+    <a class="card partyvault" href="https://n8stargamez.github.io/Party-Games/" id="card-partyvault" target="_blank" rel="noopener">
+      <div class="card-wash" style="background: radial-gradient(ellipse at bottom left, rgba(255,79,200,0.18), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-partyvault"></canvas>
+      <div class="card-play">▶ PLAY</div>
+      <div class="card-content">
+        <div class="card-tag">Party · 6 Mini-Games · Multiplayer</div>
+        <div class="card-name">Party Vault</div>
+        <div class="card-desc">Six wild party games in one — trivia, brawl, drawing relay, mystery liar &amp; more. Solo or online.</div>
+      </div>
+    </a>
+
+    <!-- Sandboxels -->
+    <a class="card sandboxels" href="https://n8stargamez.github.io/Sanboxels/" id="card-sandboxels" target="_blank" rel="noopener">
+      <div class="card-wash" style="background: radial-gradient(ellipse at bottom left, rgba(249,115,22,0.18), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-sandboxels"></canvas>
+      <div class="card-play">▶ PLAY</div>
+      <div class="card-content">
+        <div class="card-tag">Sandbox · Simulation · Creative</div>
+        <div class="card-name">Sandboxels</div>
+        <div class="card-desc">Drop elements, watch reactions. Sand, water, fire, lava and more — pixel by pixel chaos.</div>
+      </div>
+    </a>
+
+    <!-- Flapsy Bird -->
+    <a class="card flapsybird" href="https://n8stargamez.github.io/Flapsy-Bird/" id="card-flapsybird" target="_blank" rel="noopener">
+      <div class="card-wash" style="background: radial-gradient(ellipse at bottom left, rgba(255,235,59,0.15), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-flapsybird"></canvas>
+      <div class="card-play">▶ PLAY</div>
+      <div class="card-content">
+        <div class="card-tag">Arcade · Skill · Infinite</div>
+        <div class="card-name">Flapsy Bird</div>
+        <div class="card-desc">Tap to flap, dodge the pipes. Four difficulty levels, full bird customisation. How far can you go?</div>
+      </div>
+    </a>
+
+  </div>
+  <div class="apps-header">
+    <div class="apps-label">Apps &amp; Tools</div>
+    <div class="apps-title">Apps</div>
+    <div class="apps-line"></div>
+    <span class="apps-count">2 Apps Available</span>
+  </div>
+  <div class="apps-grid">
+
+    <!-- Nexus Chat -->
+    <a class="card nexus" href="https://n8stargamez.github.io/Nexus-Chat/" target="_blank" rel="noopener">
+      <div class="card-wash" style="background: radial-gradient(ellipse at bottom left, rgba(108,143,255,0.18), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-nexus"></canvas>
+      <div class="card-play">▶ OPEN</div>
+      <div class="card-content">
+        <div class="card-tag">Chat · Multiplayer · Cross-Device</div>
+        <div class="card-name">Nexus Chat</div>
+        <div class="card-desc">Real-time group chat. Host a room, share the code, anyone joins from any device.</div>
+      </div>
+    </a>
+
+    <!-- PixelPal -->
+    <a class="card pixelpal" href="https://n8stargamez.github.io/Pixel-Pals/" target="_blank" rel="noopener">
+      <div class="card-wash" style="background: radial-gradient(ellipse at bottom left, rgba(255,107,107,0.18), transparent 70%);"></div>
+      <canvas class="card-canvas" id="canvas-pixelpal"></canvas>
+      <div class="card-play">▶ OPEN</div>
+      <div class="card-content">
+        <div class="card-tag">Pixel Art · Collab · Drawing</div>
+        <div class="card-name">PixelPal</div>
+        <div class="card-desc">Draw pixel art, pick colours, save your work. Collab live with friends using a 6-digit room code.</div>
+      </div>
+    </a>
+
+  </div>
+
+  <footer>N8STARGAMEZ · All games built with Claude</footer>
+
+  <script>
+// ── Helper: resize canvas to match display size ─────────────────
+    function fitCanvas(canvas) {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    // GEOSOCCER — bouncing ball + field lines
+    // ════════════════════════════════════════════════════════════════
+    (function() {
+      const c = document.getElementById('canvas-geo');
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      const W = c.width, H = c.height;
+
+      // Field markings
+      function drawField() {
+        ctx.clearRect(0, 0, W, H);
+        // Grass
+        ctx.fillStyle = '#071a0d';
+        ctx.fillRect(0, 0, W, H);
+        // Stripes
+        for (let i = 0; i < 8; i++) {
+          ctx.fillStyle = i % 2 === 0 ? 'rgba(0,180,60,0.06)' : 'rgba(0,150,50,0.03)';
+          ctx.fillRect(i * W/8, 0, W/8, H);
+        }
+        // Center line
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(W/2, 0); ctx.lineTo(W/2, H); ctx.stroke();
+        // Center circle
+        ctx.beginPath(); ctx.arc(W/2, H/2, H*0.25, 0, Math.PI*2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.stroke();
+        // Goals
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+        ctx.strokeRect(2, H/2 - H*0.2, W*0.06, H*0.4);
+        ctx.strokeRect(W - W*0.06 - 2, H/2 - H*0.2, W*0.06, H*0.4);
+      }
+
+      // Ball
+      let ball = { x: W/2, y: H/2, vx: 1.2, vy: 0.9, r: Math.min(W,H)*0.045 };
+      // Two mini cars
+      let cars = [
+        { x: W*0.25, y: H/2, vx: 0.6, vy: 0.4, angle: 0, color: '#00aaff' },
+        { x: W*0.75, y: H/2, vx: -0.5, vy: 0.6, angle: Math.PI, color: '#ff6a00' },
+      ];
+
+      function drawCar(car) {
+        ctx.save();
+        ctx.translate(car.x, car.y);
+        ctx.rotate(car.angle);
+        const cw = W*0.07, ch = W*0.04;
+        ctx.fillStyle = car.color;
+        ctx.shadowColor = car.color;
+        ctx.shadowBlur = 10;
+        ctx.fillRect(-cw/2, -ch/2, cw, ch);
+        // Windshield
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(cw*0.1, -ch*0.35, cw*0.3, ch*0.7);
+        ctx.restore();
+      }
+
+      function tick() {
+        drawField();
+
+        // Move ball
+        ball.x += ball.vx; ball.y += ball.vy;
+        if (ball.x < ball.r || ball.x > W - ball.r) ball.vx *= -1;
+        if (ball.y < ball.r || ball.y > H - ball.r) ball.vy *= -1;
+
+        // Draw ball
+        ctx.save();
+        ctx.shadowColor = '#fff'; ctx.shadowBlur = 8;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2); ctx.fill();
+        // Pentagon pattern
+        ctx.fillStyle = '#222';
+        ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r*0.35, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+
+        // Move cars
+        cars.forEach(car => {
+          car.x += car.vx; car.y += car.vy;
+          if (car.x < W*0.05 || car.x > W*0.95) { car.vx *= -1; car.angle = Math.atan2(car.vy, car.vx); }
+          if (car.y < H*0.05 || car.y > H*0.95) { car.vy *= -1; car.angle = Math.atan2(car.vy, car.vx); }
+          car.angle = Math.atan2(car.vy, car.vx);
+          drawCar(car);
+        });
+
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+
+    // ════════════════════════════════════════════════════════════════
+    // SNAKE — demo snake slithering around
+    // ════════════════════════════════════════════════════════════════
+    (function() {
+      const c = document.getElementById('canvas-snake');
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      const W = c.width, H = c.height;
+      const GRID = 16;
+      const COLS = Math.floor(W / GRID);
+      const ROWS = Math.floor(H / GRID);
+
+      let snake = [];
+      for (let i = 8; i >= 0; i--) snake.push({ x: i + 5, y: Math.floor(ROWS/2) });
+      let dir = { x: 1, y: 0 };
+      let food = { x: Math.floor(COLS*0.7), y: Math.floor(ROWS*0.4) };
+      let frame = 0;
+
+      // Auto steer toward food
+      function autoSteer() {
+        const head = snake[0];
+        const dx = food.x - head.x;
+        const dy = food.y - head.y;
+        if (Math.abs(dx) > Math.abs(dy)) {
+          if (dx > 0 && dir.x !== -1) dir = { x: 1, y: 0 };
+          else if (dx < 0 && dir.x !== 1) dir = { x: -1, y: 0 };
+        } else {
+          if (dy > 0 && dir.y !== -1) dir = { x: 0, y: 1 };
+          else if (dy < 0 && dir.y !== 1) dir = { x: 0, y: -1 };
+        }
+      }
+
+      function tick() {
+        frame++;
+        if (frame % 6 === 0) {
+          autoSteer();
+          const head = snake[0];
+          const newHead = { x: (head.x + dir.x + COLS) % COLS, y: (head.y + dir.y + ROWS) % ROWS };
+
+          // Eat food
+          if (newHead.x === food.x && newHead.y === food.y) {
+            snake.unshift(newHead);
+            food = { x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS) };
+            if (snake.length > 14) snake = snake.slice(0, 14);
+          } else {
+            snake.unshift(newHead);
+            snake.pop();
+          }
+        }
+
+        // Draw
+        ctx.fillStyle = '#050f05';
+        ctx.fillRect(0, 0, W, H);
+
+        // Grid dots
+        ctx.fillStyle = 'rgba(0,180,60,0.06)';
+        for (let x = 0; x < COLS; x++)
+          for (let y = 0; y < ROWS; y++)
+            ctx.fillRect(x * GRID + GRID/2 - 1, y * GRID + GRID/2 - 1, 2, 2);
+
+        // Food
+        ctx.shadowColor = '#ff3030'; ctx.shadowBlur = 12;
+        ctx.fillStyle = '#ff3030';
+        ctx.beginPath();
+        ctx.arc(food.x * GRID + GRID/2, food.y * GRID + GRID/2, GRID*0.35, 0, Math.PI*2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Snake
+        snake.forEach((seg, i) => {
+          const t = 1 - i / snake.length;
+          ctx.shadowColor = '#00ff60'; ctx.shadowBlur = i === 0 ? 14 : 4;
+          ctx.fillStyle = i === 0 ? '#00ff60' : `rgba(0,${Math.floor(180*t + 80)},${Math.floor(60*t)},${0.6 + t*0.4})`;
+          const pad = i === 0 ? 1 : 2;
+          ctx.fillRect(seg.x * GRID + pad, seg.y * GRID + pad, GRID - pad*2, GRID - pad*2);
+          // Eyes on head
+          if (i === 0) {
+            ctx.fillStyle = '#000';
+            ctx.shadowBlur = 0;
+            ctx.fillRect(seg.x * GRID + GRID*0.6, seg.y * GRID + GRID*0.2, 3, 3);
+            ctx.fillRect(seg.x * GRID + GRID*0.6, seg.y * GRID + GRID*0.6, 3, 3);
+          }
+        });
+        ctx.shadowBlur = 0;
+
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+
+    // ════════════════════════════════════════════════════════════════
+    // TACTICAL OPS — bullets flying, crosshair, targets
+    // ════════════════════════════════════════════════════════════════
+    (function() {
+      const c = document.getElementById('canvas-tac');
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      const W = c.width, H = c.height;
+
+      // Spawn bullets from random edges
+      let bullets = [];
+      function spawnBullet() {
+        const edge = Math.floor(Math.random() * 4);
+        let x, y, vx, vy;
+        const speed = 2.5 + Math.random() * 3;
+        const angle = Math.random() * Math.PI * 0.4 - Math.PI * 0.2;
+        if (edge === 0) { x = Math.random()*W; y = -4; vx = Math.sin(angle)*speed; vy = speed; }
+        else if (edge === 1) { x = W+4; y = Math.random()*H; vx = -speed; vy = Math.sin(angle)*speed; }
+        else if (edge === 2) { x = Math.random()*W; y = H+4; vx = Math.sin(angle)*speed; vy = -speed; }
+        else { x = -4; y = Math.random()*H; vx = speed; vy = Math.sin(angle)*speed; }
+        bullets.push({ x, y, vx, vy, len: 10 + Math.random() * 14, life: 1 });
+      }
+
+      // Targets (red circles)
+      let targets = [
+        { x: W*0.25, y: H*0.3, r: 14, hit: false, flash: 0 },
+        { x: W*0.7,  y: H*0.6, r: 14, hit: false, flash: 0 },
+        { x: W*0.5,  y: H*0.2, r: 14, hit: false, flash: 0 },
+      ];
+
+      // Crosshair position
+      let cross = { x: W/2, y: H/2, tx: W*0.25, ty: H*0.3 };
+      let crossTarget = 0;
+
+      let frame = 0;
+
+      function tick() {
+        frame++;
+
+        // Background — dark military green
+        ctx.fillStyle = '#080e08';
+        ctx.fillRect(0, 0, W, H);
+
+        // Grid
+        ctx.strokeStyle = 'rgba(60,100,60,0.15)';
+        ctx.lineWidth = 0.5;
+        for (let x = 0; x < W; x += 24) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+        for (let y = 0; y < H; y += 24) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+        // Spawn bullets periodically
+        if (frame % 18 === 0) spawnBullet();
+
+        // Draw & move bullets
+        bullets = bullets.filter(b => b.x > -20 && b.x < W+20 && b.y > -20 && b.y < H+20);
+        bullets.forEach(b => {
+          b.x += b.vx; b.y += b.vy;
+          const nx = b.vx / Math.hypot(b.vx, b.vy);
+          const ny = b.vy / Math.hypot(b.vx, b.vy);
+          ctx.save();
+          ctx.strokeStyle = `rgba(255,220,80,0.85)`;
+          ctx.shadowColor = '#ffcc00'; ctx.shadowBlur = 6;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(b.x, b.y);
+          ctx.lineTo(b.x - nx * b.len, b.y - ny * b.len);
+          ctx.stroke();
+          // Trail
+          ctx.strokeStyle = `rgba(255,180,40,0.25)`;
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.moveTo(b.x - nx * b.len, b.y - ny * b.len);
+          ctx.lineTo(b.x - nx * b.len * 2.5, b.y - ny * b.len * 2.5);
+          ctx.stroke();
+          ctx.restore();
+
+          // Check hit on targets
+          targets.forEach(t => {
+            if (!t.hit && Math.hypot(b.x - t.x, b.y - t.y) < t.r + 3) {
+              t.flash = 12;
+              setTimeout(() => { t.hit = false; }, 800);
+              t.hit = true;
+            }
+          });
+        });
+
+        // Draw targets
+        targets.forEach(t => {
+          if (t.flash > 0) t.flash--;
+          const flashing = t.flash > 0;
+          ctx.save();
+          ctx.shadowColor = flashing ? '#fff' : '#ff2020';
+          ctx.shadowBlur = flashing ? 20 : 8;
+          // Outer ring
+          ctx.strokeStyle = flashing ? '#ffffff' : '#ff2020';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.arc(t.x, t.y, t.r, 0, Math.PI*2); ctx.stroke();
+          ctx.beginPath(); ctx.arc(t.x, t.y, t.r*0.6, 0, Math.PI*2); ctx.stroke();
+          // Center dot
+          ctx.fillStyle = flashing ? '#fff' : '#ff2020';
+          ctx.beginPath(); ctx.arc(t.x, t.y, t.r*0.2, 0, Math.PI*2); ctx.fill();
+          // Crosshair lines
+          ctx.strokeStyle = (flashing ? '#fff' : '#ff2020');
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(t.x - t.r*1.4, t.y); ctx.lineTo(t.x - t.r*1.1, t.y); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(t.x + t.r*1.1, t.y); ctx.lineTo(t.x + t.r*1.4, t.y); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(t.x, t.y - t.r*1.4); ctx.lineTo(t.x, t.y - t.r*1.1); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(t.x, t.y + t.r*1.1); ctx.lineTo(t.x, t.y + t.r*1.4); ctx.stroke();
+          ctx.restore();
+        });
+
+        // Animate crosshair moving between targets
+        if (frame % 90 === 0) {
+          crossTarget = (crossTarget + 1) % targets.length;
+          cross.tx = targets[crossTarget].x;
+          cross.ty = targets[crossTarget].y;
+        }
+        cross.x += (cross.tx - cross.x) * 0.04;
+        cross.y += (cross.ty - cross.y) * 0.04;
+
+        // Draw crosshair
+        const cr = 18;
+        ctx.save();
+        ctx.strokeStyle = 'rgba(0,255,100,0.9)';
+        ctx.shadowColor = '#00ff60'; ctx.shadowBlur = 10;
+        ctx.lineWidth = 1.5;
+        // Outer circle
+        ctx.beginPath(); ctx.arc(cross.x, cross.y, cr, 0, Math.PI*2); ctx.stroke();
+        // Lines
+        ctx.beginPath(); ctx.moveTo(cross.x - cr*1.8, cross.y); ctx.lineTo(cross.x - cr*1.1, cross.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cross.x + cr*1.1, cross.y); ctx.lineTo(cross.x + cr*1.8, cross.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cross.x, cross.y - cr*1.8); ctx.lineTo(cross.x, cross.y - cr*1.1); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cross.x, cross.y + cr*1.1); ctx.lineTo(cross.x, cross.y + cr*1.8); ctx.stroke();
+        // Center dot
+        ctx.fillStyle = '#00ff60';
+        ctx.beginPath(); ctx.arc(cross.x, cross.y, 2, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+
+    // ════════════════════════════════════════════════════════════════
+    // HOLLOW CREEK — fog, trees, flickering lantern, eyes in dark
+    // ════════════════════════════════════════════════════════════════
+    (function() {
+      const c = document.getElementById('canvas-horror');
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      const W = c.width, H = c.height;
+
+      // Trees
+      const trees = Array.from({length: 12}, (_, i) => ({
+        x: (i / 11) * W * 1.1 - W*0.05,
+        h: H * (0.4 + Math.random() * 0.35),
+        w: 6 + Math.random() * 10,
+        sway: Math.random() * Math.PI * 2,
+        swaySpeed: 0.003 + Math.random() * 0.004,
+      }));
+
+      // Eyes in darkness
+      const eyePairs = Array.from({length: 3}, () => ({
+        x: Math.random() * W * 0.8 + W*0.1,
+        y: H * (0.25 + Math.random() * 0.3),
+        blink: 0,
+        blinkTimer: Math.floor(Math.random() * 200),
+        visible: Math.random() > 0.5,
+        visTimer: Math.floor(Math.random() * 300),
+      }));
+
+      // Lantern
+      let lantern = { x: W/2, y: H*0.55, flicker: 1 };
+      // Fog particles
+      const fog = Array.from({length: 8}, () => ({
+        x: Math.random() * W,
+        y: H * (0.5 + Math.random() * 0.5),
+        r: 60 + Math.random() * 80,
+        vx: 0.15 + Math.random() * 0.2,
+        alpha: 0.03 + Math.random() * 0.05,
+      }));
+
+      let frame = 0;
+
+      function tick() {
+        frame++;
+        ctx.clearRect(0, 0, W, H);
+
+        // Sky gradient — almost black
+        const sky = ctx.createLinearGradient(0, 0, 0, H);
+        sky.addColorStop(0, '#050508');
+        sky.addColorStop(0.6, '#0a0a10');
+        sky.addColorStop(1, '#12100a');
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, W, H);
+
+        // Moon
+        ctx.save();
+        ctx.shadowColor = 'rgba(200,200,180,0.4)'; ctx.shadowBlur = 30;
+        ctx.fillStyle = 'rgba(220,215,190,0.7)';
+        ctx.beginPath(); ctx.arc(W*0.78, H*0.18, 18, 0, Math.PI*2); ctx.fill();
+        // Moon shadow
+        ctx.fillStyle = 'rgba(5,5,8,0.85)';
+        ctx.beginPath(); ctx.arc(W*0.78 + 8, H*0.18 - 4, 16, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+
+        // Stars
+        ctx.fillStyle = 'rgba(255,255,240,0.5)';
+        [
+          [W*0.1, H*0.08], [W*0.22, H*0.12], [W*0.45, H*0.06],
+          [W*0.6, H*0.15], [W*0.88, H*0.09], [W*0.33, H*0.04],
+          [W*0.72, H*0.05], [W*0.15, H*0.22],
+        ].forEach(([sx, sy]) => {
+          const twinkle = 0.4 + 0.6 * Math.abs(Math.sin(frame * 0.03 + sx));
+          ctx.globalAlpha = twinkle * 0.5;
+          ctx.beginPath(); ctx.arc(sx, sy, 1.2, 0, Math.PI*2); ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+
+        // Ground
+        const ground = ctx.createLinearGradient(0, H*0.65, 0, H);
+        ground.addColorStop(0, '#0c100a');
+        ground.addColorStop(1, '#080a06');
+        ctx.fillStyle = ground;
+        ctx.fillRect(0, H*0.65, W, H*0.35);
+
+        // Trees
+        trees.forEach(t => {
+          t.sway += t.swaySpeed;
+          const sway = Math.sin(t.sway) * 2;
+          ctx.save();
+          ctx.translate(t.x + sway, H*0.65);
+          // Trunk
+          ctx.fillStyle = '#1a1208';
+          ctx.fillRect(-t.w/2, -t.h*0.3, t.w, t.h*0.3);
+          // Canopy layers
+          for (let layer = 0; layer < 3; layer++) {
+            const ly = -t.h * (0.3 + layer * 0.25);
+            const lw = t.w * (3.5 - layer * 0.8);
+            ctx.fillStyle = `rgba(${8 + layer*3}, ${18 + layer*4}, ${8 + layer*2}, 0.95)`;
+            ctx.beginPath();
+            ctx.moveTo(0, ly - t.h*0.3);
+            ctx.lineTo(-lw/2, ly);
+            ctx.lineTo(lw/2, ly);
+            ctx.closePath();
+            ctx.fill();
+          }
+          ctx.restore();
+        });
+
+        // Eyes in darkness
+        eyePairs.forEach(ep => {
+          ep.visTimer--;
+          if (ep.visTimer <= 0) {
+            ep.visible = !ep.visible;
+            ep.visTimer = 150 + Math.floor(Math.random() * 250);
+            if (ep.visible) { ep.x = Math.random() * W * 0.7 + W*0.15; ep.y = H*(0.28 + Math.random()*0.25); }
+          }
+          ep.blinkTimer--;
+          if (ep.blinkTimer <= 0) { ep.blink = 8; ep.blinkTimer = 80 + Math.floor(Math.random()*120); }
+          if (ep.blink > 0) ep.blink--;
+
+          if (ep.visible && ep.blink === 0) {
+            ctx.save();
+            ctx.shadowColor = '#cc0000'; ctx.shadowBlur = 12;
+            ctx.fillStyle = 'rgba(200,0,0,0.85)';
+            [-6, 6].forEach(ox => {
+              ctx.beginPath(); ctx.ellipse(ep.x + ox, ep.y, 3.5, 2.2, 0, 0, Math.PI*2); ctx.fill();
+            });
+            ctx.restore();
+          }
+        });
+
+        // Lantern flicker
+        lantern.flicker = 0.85 + Math.random() * 0.3;
+        const lr = 55 * lantern.flicker;
+
+        const lanternGlow = ctx.createRadialGradient(lantern.x, lantern.y, 2, lantern.x, lantern.y, lr);
+        lanternGlow.addColorStop(0, `rgba(255,200,80,${0.22 * lantern.flicker})`);
+        lanternGlow.addColorStop(0.4, `rgba(200,140,40,${0.1 * lantern.flicker})`);
+        lanternGlow.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = lanternGlow;
+        ctx.beginPath(); ctx.arc(lantern.x, lantern.y, lr, 0, Math.PI*2); ctx.fill();
+
+        // Lantern body
+        ctx.save();
+        ctx.shadowColor = '#ffcc50'; ctx.shadowBlur = 14 * lantern.flicker;
+        ctx.fillStyle = `rgba(255,210,90,${0.9 * lantern.flicker})`;
+        ctx.fillRect(lantern.x - 5, lantern.y - 9, 10, 14);
+        ctx.fillStyle = 'rgba(255,240,160,0.95)';
+        ctx.fillRect(lantern.x - 3, lantern.y - 7, 6, 10);
+        // Handle
+        ctx.strokeStyle = 'rgba(150,120,60,0.8)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(lantern.x, lantern.y - 9, 5, Math.PI, 0); ctx.stroke();
+        ctx.restore();
+
+        // Fog
+        fog.forEach(f => {
+          f.x += f.vx;
+          if (f.x > W + f.r) f.x = -f.r;
+          const grad = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r);
+          grad.addColorStop(0, `rgba(180,185,170,${f.alpha})`);
+          grad.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); ctx.fill();
+        });
+
+        // Dark vignette
+        const vig = ctx.createRadialGradient(W/2, H/2, H*0.2, W/2, H/2, H*0.85);
+        vig.addColorStop(0, 'rgba(0,0,0,0)');
+        vig.addColorStop(1, 'rgba(0,0,0,0.75)');
+        ctx.fillStyle = vig;
+        ctx.fillRect(0, 0, W, H);
+
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+
+    // ── Orbie card animation ────────────────────────────────────────
+    (() => {
+      const c = document.getElementById('canvas-orbie');
+      if (!c) return;
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      let W = c.width, H = c.height;
+
+      // Mini maze walls (simplified grid)
+      const TILE = 14;
+      const maze = [
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,0,0,0,1,0,0,0,0,0,1,0,0,0,1],
+        [1,0,1,0,1,0,1,1,1,0,1,0,1,0,1],
+        [1,0,1,0,0,0,0,0,0,0,0,0,1,0,1],
+        [1,0,1,1,1,0,1,0,1,0,1,1,1,0,1],
+        [1,0,0,0,0,0,1,0,1,0,0,0,0,0,1],
+        [1,1,1,0,1,1,1,0,1,1,1,0,1,1,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      ];
+      const MR = maze.length, MC = maze[0].length;
+      const offX = (W - MC * TILE) / 2;
+      const offY = (H - MR * TILE) / 2;
+
+      // Orbie state
+      let ox = 1.5 * TILE + offX, oy = 1.5 * TILE + offY;
+      let angle = 0, mouthA = 0;
+      const path = [
+        {x:1,y:1},{x:3,y:1},{x:5,y:1},{x:9,y:1},{x:13,y:1},
+        {x:13,y:3},{x:11,y:3},{x:9,y:3},{x:7,y:3},{x:5,y:3},{x:3,y:3},{x:1,y:3},
+        {x:1,y:5},{x:3,y:5},{x:5,y:5},{x:7,y:5},{x:9,y:5},{x:11,y:5},{x:13,y:5},
+        {x:13,y:7},{x:9,y:7},{x:5,y:7},{x:1,y:7},{x:1,y:5},{x:1,y:3},{x:1,y:1},
+      ];
+      let pathIdx = 0, progress = 0;
+
+      // Dots
+      const dots = [];
+      for(let r=0;r<MR;r++) for(let c=0;c<MC;c++)
+        if(maze[r][c]===0) dots.push({c,r,eaten:false});
+
+      // Ghosts
+      const ghosts = [
+        {x:7*TILE+offX, y:3*TILE+offY, color:'#ff2d78', dx:1, dy:0},
+        {x:9*TILE+offX, y:5*TILE+offY, color:'#00eeff', dx:-1, dy:0},
+      ];
+
+      let frame = 0;
+      function tick() {
+        frame++;
+        W = c.width; H = c.height;
+        ctx.fillStyle = '#04060f';
+        ctx.fillRect(0, 0, W, H);
+
+        // Draw maze
+        for(let r=0;r<MR;r++) for(let cc2=0;cc2<MC;cc2++){
+          if(maze[r][cc2]===1){
+            const x=cc2*TILE+offX, y=r*TILE+offY;
+            ctx.fillStyle='#0d1a3a';
+            ctx.fillRect(x,y,TILE,TILE);
+            ctx.strokeStyle='rgba(0,80,200,0.35)';
+            ctx.lineWidth=0.5;
+            ctx.strokeRect(x+0.5,y+0.5,TILE-1,TILE-1);
+          }
+        }
+
+        // Draw dots
+        dots.forEach(d => {
+          if(d.eaten) return;
+          ctx.fillStyle='rgba(255,225,53,0.65)';
+          ctx.beginPath();
+          ctx.arc(d.c*TILE+offX+TILE/2, d.r*TILE+offY+TILE/2, 2, 0, Math.PI*2);
+          ctx.fill();
+        });
+
+        // Move Orbie along path
+        progress += 0.03;
+        if(progress >= 1){ progress = 0; pathIdx = (pathIdx+1) % path.length; }
+        const cur = path[pathIdx], nxt = path[(pathIdx+1)%path.length];
+        ox = (cur.x*(1-progress) + nxt.x*progress) * TILE + offX + TILE/2;
+        oy = (cur.y*(1-progress) + nxt.y*progress) * TILE + offY + TILE/2;
+        angle = Math.atan2(nxt.y-cur.y, nxt.x-cur.x);
+
+        // Eat dots near Orbie
+        dots.forEach(d => {
+          if(!d.eaten && Math.hypot(d.c*TILE+offX+TILE/2-ox, d.r*TILE+offY+TILE/2-oy) < TILE*0.7)
+            d.eaten = true;
+        });
+        // Reset dots periodically
+        if(frame % 200 === 0) dots.forEach(d=>d.eaten=false);
+
+        // Move ghosts (bounce around)
+        ghosts.forEach((g,i) => {
+          g.x += g.dx * 0.8;
+          g.y += g.dy * 0.8;
+          const col = Math.floor((g.x - offX) / TILE);
+          const row = Math.floor((g.y - offY) / TILE);
+          if(col<=0||col>=MC-1||maze[row]?.[col]===1) { g.dx*=-1; g.x+=g.dx*2; }
+          if(row<=0||row>=MR-1||maze[row]?.[col]===1) { g.dy*=-1; g.y+=g.dy*2; }
+          if(frame%(80+i*30)===0){ if(Math.random()<0.5){g.dx=[-1,1][Math.floor(Math.random()*2)];g.dy=0;}else{g.dy=[-1,1][Math.floor(Math.random()*2)];g.dx=0;} }
+        });
+
+        // Draw ghosts
+        ghosts.forEach(g => {
+          ctx.save();
+          ctx.fillStyle = g.color;
+          ctx.shadowColor = g.color; ctx.shadowBlur = 8;
+          const gr = 6;
+          ctx.beginPath();
+          ctx.arc(g.x, g.y-1, gr, Math.PI, 0);
+          ctx.lineTo(g.x+gr, g.y+gr-1);
+          for(let w=0;w<3;w++){
+            const wx1=g.x+gr-(w*gr*2/3), wx2=g.x+gr-((w+0.5)*gr*2/3), wx3=g.x+gr-((w+1)*gr*2/3);
+            ctx.quadraticCurveTo(wx2,g.y+gr*1.5-1,wx3,g.y+gr-1);
+          }
+          ctx.closePath(); ctx.fill();
+          ctx.fillStyle='#fff';
+          ctx.beginPath(); ctx.ellipse(g.x-2,g.y-2,2,2.5,0,0,Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(g.x+2,g.y-2,2,2.5,0,0,Math.PI*2); ctx.fill();
+          ctx.restore();
+        });
+
+        // Draw Orbie
+        mouthA = Math.abs(Math.sin(frame * 0.18)) * 0.35;
+        ctx.save();
+        ctx.translate(ox, oy);
+        ctx.rotate(angle);
+        ctx.fillStyle = '#ffe135';
+        ctx.shadowColor = '#ffe135'; ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.arc(0, 0, 7, mouthA, Math.PI*2 - mouthA);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.beginPath(); ctx.arc(2.8, -2.8, 1.4, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+    // ── Block Fall card animation ───────────────────────────────────
+    (() => {
+      const c = document.getElementById('canvas-blockfall');
+      if (!c) return;
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      let W = c.width, H = c.height;
+
+      const TILE = Math.floor(W / 8);
+
+      const COLORS = [
+        '#f87171', '#fb923c', '#facc15', '#4ade80',
+        '#34d399', '#60a5fa', '#818cf8', '#c084fc', '#f472b6',
+      ];
+
+      const SHAPES = [
+        [[0,0],[1,0],[0,1],[1,1]],
+        [[0,0],[1,0],[2,0],[3,0]],
+        [[0,0],[1,0],[2,0],[1,1]],
+        [[0,0],[1,0],[1,1],[2,1]],
+        [[1,0],[2,0],[0,1],[1,1]],
+        [[0,0],[0,1],[1,1],[2,1]],
+        [[2,0],[0,1],[1,1],[2,1]],
+      ];
+
+      function makePiece() {
+        const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+        const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+        const maxCol = 8 - Math.max(...shape.map(([dc]) => dc)) - 1;
+        const col = Math.floor(Math.random() * maxCol);
+        return { shape, color, col, y: -TILE * 2, speed: 0.6 + Math.random() * 0.8 };
+      }
+
+      let pieces = Array.from({length: 6}, makePiece);
+      // Stagger starting positions
+      pieces.forEach((p, i) => { p.y = -TILE * 2 - i * (H / pieces.length); });
+
+      function drawRoundedRect(x, y, w, h, r, color) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.22)';
+        ctx.beginPath();
+        ctx.ellipse(x + w * 0.35, y + h * 0.28, w * 0.22, h * 0.13, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function tick() {
+        W = c.width; H = c.height;
+        ctx.fillStyle = '#1a1025';
+        ctx.fillRect(0, 0, W, H);
+
+        // Subtle grid lines
+        ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+        ctx.lineWidth = 0.5;
+        for (let col = 0; col <= 8; col++) {
+          ctx.beginPath(); ctx.moveTo(col * TILE, 0); ctx.lineTo(col * TILE, H); ctx.stroke();
+        }
+
+        pieces.forEach((p, i) => {
+          p.y += p.speed;
+          // Reset to top once fully off bottom
+          const maxDr = Math.max(...p.shape.map(([, dr]) => dr));
+          if (p.y > H + TILE * 2) {
+            pieces[i] = makePiece();
+            pieces[i].y = -TILE * (maxDr + 2);
+          }
+
+          p.shape.forEach(([dc, dr]) => {
+            const px = (p.col + dc) * TILE + 1;
+            const py = p.y + dr * TILE + 1;
+            ctx.save();
+            ctx.shadowColor = p.color;
+            ctx.shadowBlur = 8;
+            drawRoundedRect(px, py, TILE - 2, TILE - 2, 3, p.color);
+            ctx.restore();
+          });
+        });
+
+        // Vignette
+        const vig = ctx.createRadialGradient(W/2, H/2, H*0.15, W/2, H/2, H*0.75);
+        vig.addColorStop(0, 'rgba(0,0,0,0)');
+        vig.addColorStop(1, 'rgba(0,0,0,0.55)');
+        ctx.fillStyle = vig;
+        ctx.fillRect(0, 0, W, H);
+
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+
+    // ── Chess card animation ────────────────────────────────────────
+    (() => {
+      const c = document.getElementById('canvas-chess');
+      if (!c) return;
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      let W = c.width, H = c.height;
+
+      const COLS = 8;
+      const SQ = Math.floor(Math.min(W, H) / 9);
+      const OX = Math.floor((W - SQ * 8) / 2);
+      const OY = Math.floor((H - SQ * 8) / 2);
+
+      const LIGHT = '#c8c9a0', DARK = '#4a5240';
+      const PIECES = {
+        wK:'♔',wQ:'♕',wR:'♖',wB:'♗',wN:'♘',wP:'♙',
+        bK:'♚',bQ:'♛',bR:'♜',bB:'♝',bN:'♞',bP:'♟'
+      };
+
+      // A mini game being played out
+      const moves = [
+        [6,4,4,4],[1,4,3,4],[6,3,4,3],[1,3,3,3],[7,5,4,2],[0,5,3,2],
+        [7,6,5,5],[0,6,2,5],[4,2,3,3],[3,3,4,4],[5,5,3,4],[2,5,4,4],
+        [4,3,3,4],[3,4,4,3],[3,2,4,3],[4,4,3,3]
+      ];
+
+      let board = [
+        ['bR','bN','bB','bQ','bK','bB','bN','bR'],
+        ['bP','bP','bP','bP','bP','bP','bP','bP'],
+        [null,null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null,null],
+        ['wP','wP','wP','wP','wP','wP','wP','wP'],
+        ['wR','wN','wB','wQ','wK','wB','wN','wR'],
+      ];
+
+      let moveIdx = 0, moveTimer = 0, animPiece = null;
+      const MOVE_INTERVAL = 90; // frames between moves
+
+      function applyMove(from_r, from_c, to_r, to_c) {
+        board[to_r][to_c] = board[from_r][from_c];
+        board[from_r][from_c] = null;
+      }
+
+      function tick() {
+        W = c.width; H = c.height;
+        ctx.fillStyle = '#0e0f14';
+        ctx.fillRect(0, 0, W, H);
+
+        const sq = Math.floor(Math.min(W, H) / 9.5);
+        const ox = Math.floor((W - sq * 8) / 2);
+        const oy = Math.floor((H - sq * 8) / 2);
+
+        // Draw board
+        for (let r = 0; r < 8; r++) {
+          for (let cc = 0; cc < 8; cc++) {
+            ctx.fillStyle = (r + cc) % 2 === 0 ? LIGHT : DARK;
+            ctx.fillRect(ox + cc * sq, oy + r * sq, sq, sq);
+          }
+        }
+
+        // Highlight last move
+        if (moveIdx > 0 && moveIdx <= moves.length) {
+          const lm = moves[moveIdx - 1];
+          ctx.fillStyle = 'rgba(232,255,0,0.3)';
+          ctx.fillRect(ox + lm[3] * sq, oy + lm[2] * sq, sq, sq);
+          ctx.fillStyle = 'rgba(232,255,0,0.18)';
+          ctx.fillRect(ox + lm[1] * sq, oy + lm[0] * sq, sq, sq);
+        }
+
+        // Draw pieces
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = `${Math.floor(sq * 0.72)}px serif`;
+        for (let r = 0; r < 8; r++) {
+          for (let cc = 0; cc < 8; cc++) {
+            const p = board[r][cc];
+            if (p) {
+              ctx.fillStyle = p[0] === 'w' ? '#fff' : '#111';
+              ctx.shadowColor = p[0] === 'w' ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.1)';
+              ctx.shadowBlur = 3;
+              ctx.fillText(PIECES[p], ox + cc * sq + sq / 2, oy + r * sq + sq / 2);
+              ctx.shadowBlur = 0;
+            }
+          }
+        }
+
+        // Advance moves
+        moveTimer++;
+        if (moveTimer >= MOVE_INTERVAL) {
+          moveTimer = 0;
+          if (moveIdx < moves.length) {
+            const m = moves[moveIdx];
+            applyMove(m[0], m[1], m[2], m[3]);
+            moveIdx++;
+          } else {
+            // Reset
+            moveIdx = 0;
+            board = [
+              ['bR','bN','bB','bQ','bK','bB','bN','bR'],
+              ['bP','bP','bP','bP','bP','bP','bP','bP'],
+              [null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],
+              [null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],
+              ['wP','wP','wP','wP','wP','wP','wP','wP'],
+              ['wR','wN','wB','wQ','wK','wB','wN','wR'],
+            ];
+          }
+        }
+
+        // Vignette
+        const vig = ctx.createRadialGradient(W/2, H/2, H*0.1, W/2, H/2, H*0.7);
+        vig.addColorStop(0, 'rgba(0,0,0,0)');
+        vig.addColorStop(1, 'rgba(0,0,0,0.6)');
+        ctx.fillStyle = vig;
+        ctx.fillRect(0, 0, W, H);
+
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+
+    // ── Aero City card animation ────────────────────────────────────
+    (() => {
+      const c = document.getElementById('canvas-aerocity');
+      if (!c) return;
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      let W = c.width, H = c.height;
+
+      // ── City definition (seeded, fixed layout) ──
+      const CITY_W = W * 3.2; // total scrollable city width
+      const SCROLL_SPEED = 0.4;
+      let scrollX = 0;
+
+      function seededRand(x, y) {
+        let n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+        return n - Math.floor(n);
+      }
+
+      // Generate buildings once
+      const BLDG_COLS = ['#38bdf8','#0ea5e9','#67e8f9','#22d3ee','#06b6d4','#4ade80','#34d399','#a5f3fc','#bae6fd','#c4b5fd'];
+      const buildings = [];
+      let bx = 30;
+      while (bx < CITY_W - 40) {
+        const bw = 18 + seededRand(bx, 1) * 38;
+        const bh = 30 + seededRand(bx, 2) * (H * 0.62);
+        const col = BLDG_COLS[Math.floor(seededRand(bx, 3) * BLDG_COLS.length)];
+        const winCols = Math.floor(seededRand(bx, 4) * 2) + 2;
+        const hasSky  = seededRand(bx, 5) > 0.6;
+        const hasAnt  = seededRand(bx, 6) > 0.5;
+        buildings.push({ x: bx, w: bw, h: bh, col, winCols, hasSky, hasAnt });
+        bx += bw + 2 + seededRand(bx, 7) * 8;
+      }
+
+      // Clouds — three parallax layers
+      function makeClouds(n, yRange, spd, alpha) {
+        return Array.from({length: n}, (_, i) => ({
+          x: (i / n) * CITY_W,
+          y: yRange[0] + seededRand(i, 99) * (yRange[1] - yRange[0]),
+          rx: 28 + seededRand(i, 1) * 55,
+          ry: 10 + seededRand(i, 2) * 18,
+          spd, alpha,
+          puffs: Math.floor(2 + seededRand(i, 3) * 3)
+        }));
+      }
+      const clouds = [
+        ...makeClouds(12, [H * 0.04, H * 0.22], 0.08, 0.82),
+        ...makeClouds(8,  [H * 0.10, H * 0.30], 0.14, 0.55),
+        ...makeClouds(6,  [H * 0.02, H * 0.18], 0.05, 0.35),
+      ];
+
+      // Plane
+      const plane = { x: -120, y: H * 0.18, spd: 1.1, trail: [] };
+
+      // Window flicker timing
+      const WIN_STATES = {};
+      function getWinLit(bIdx, wc, wr, frame) {
+        const key = `${bIdx}_${wc}_${wr}`;
+        if (!WIN_STATES[key]) WIN_STATES[key] = { lit: seededRand(bIdx+wc, wr) > 0.3, next: Math.floor(seededRand(bIdx, wc*7+wr)*300) };
+        const ws = WIN_STATES[key];
+        if (frame >= ws.next) { ws.lit = !ws.lit; ws.next = frame + 60 + Math.floor(seededRand(frame, bIdx+wc) * 400); }
+        return ws.lit;
+      }
+
+      let frame = 0;
+
+      function drawSky() {
+        // Frutiger Aero gradient sky
+        const sky = ctx.createLinearGradient(0, 0, 0, H);
+        sky.addColorStop(0,    '#0369a1');
+        sky.addColorStop(0.30, '#0ea5e9');
+        sky.addColorStop(0.62, '#38bdf8');
+        sky.addColorStop(0.85, '#7dd3fc');
+        sky.addColorStop(1,    '#bae6fd');
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, W, H);
+
+        // Sun glow
+        const sunX = W * 0.72, sunY = H * 0.14;
+        const sunR = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, H * 0.38);
+        sunR.addColorStop(0,    'rgba(255,255,200,0.55)');
+        sunR.addColorStop(0.15, 'rgba(255,220,80,0.22)');
+        sunR.addColorStop(0.45, 'rgba(56,189,248,0.08)');
+        sunR.addColorStop(1,    'rgba(56,189,248,0)');
+        ctx.fillStyle = sunR;
+        ctx.fillRect(0, 0, W, H);
+
+        // Sun disk
+        ctx.save();
+        ctx.shadowColor = 'rgba(255,255,180,0.9)';
+        ctx.shadowBlur = 28;
+        ctx.fillStyle = 'rgba(255,252,220,0.97)';
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, 11, 0, Math.PI * 2);
+        ctx.fill();
+        // Lens flare streaks
+        ctx.globalAlpha = 0.18;
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1.5;
+        for (let a = 0; a < Math.PI * 2; a += Math.PI / 6) {
+          ctx.beginPath();
+          ctx.moveTo(sunX + Math.cos(a) * 14, sunY + Math.sin(a) * 14);
+          ctx.lineTo(sunX + Math.cos(a) * 26, sunY + Math.sin(a) * 26);
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      }
+
+      function drawCloud(cl) {
+        const cx = ((cl.x - scrollX * cl.spd) % (CITY_W + 200) + CITY_W + 200) % (CITY_W + 200) - 100;
+        ctx.save();
+        ctx.globalAlpha = cl.alpha;
+        ctx.fillStyle = '#fff';
+        ctx.shadowColor = 'rgba(56,189,248,0.4)';
+        ctx.shadowBlur = 12;
+        for (let p = 0; p < cl.puffs; p++) {
+          const ox = (p - cl.puffs / 2) * cl.rx * 0.55;
+          const oy = p % 2 === 0 ? 0 : -cl.ry * 0.3;
+          ctx.beginPath();
+          ctx.ellipse(cx + ox, cl.y + oy, cl.rx * (0.7 + p * 0.15), cl.ry, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function drawBuilding(b, i) {
+        const bx = b.x - scrollX;
+        if (bx + b.w < -10 || bx > W + 10) return;
+        const by = H - b.h;
+
+        // Glass body gradient
+        const grad = ctx.createLinearGradient(bx, by, bx + b.w, by);
+        grad.addColorStop(0,   b.col + 'dd');
+        grad.addColorStop(0.5, b.col + 'ff');
+        grad.addColorStop(1,   b.col + '88');
+        ctx.fillStyle = grad;
+        ctx.shadowColor = b.col;
+        ctx.shadowBlur = 8;
+        ctx.fillRect(bx, by, b.w, b.h);
+        ctx.shadowBlur = 0;
+
+        // Roof highlight
+        ctx.fillStyle = 'rgba(255,255,255,0.28)';
+        ctx.fillRect(bx, by, b.w, Math.max(2, b.h * 0.06));
+
+        // Sky reflection stripe
+        if (b.hasSky && b.w > 20) {
+          ctx.fillStyle = 'rgba(255,255,255,0.1)';
+          ctx.fillRect(bx + b.w * 0.6, by + b.h * 0.1, b.w * 0.22, b.h * 0.5);
+        }
+
+        // Windows
+        const winRows = Math.max(2, Math.floor(b.h / 14));
+        const winW = (b.w - 6) / b.winCols - 2;
+        const winH = Math.min(5, (b.h / winRows) * 0.45);
+        for (let wr = 0; wr < winRows; wr++) {
+          for (let wc = 0; wc < b.winCols; wc++) {
+            const wx = bx + 3 + wc * ((b.w - 4) / b.winCols);
+            const wy = by + 6 + wr * (b.h / winRows);
+            const lit = getWinLit(i, wc, wr, frame);
+            ctx.fillStyle = lit ? 'rgba(255,235,100,0.9)' : 'rgba(150,210,255,0.18)';
+            ctx.fillRect(wx, wy, winW, winH);
+          }
+        }
+
+        // Antenna
+        if (b.hasAnt) {
+          ctx.strokeStyle = 'rgba(200,200,220,0.6)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(bx + b.w / 2, by);
+          ctx.lineTo(bx + b.w / 2, by - 10);
+          ctx.stroke();
+          // Blinking light
+          const blink = Math.sin(frame * 0.06 + i) > 0;
+          if (blink) {
+            ctx.fillStyle = 'rgba(255,80,80,0.9)';
+            ctx.shadowColor = '#ff5050';
+            ctx.shadowBlur = 6;
+            ctx.beginPath();
+            ctx.arc(bx + b.w / 2, by - 11, 1.8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+          }
+        }
+      }
+
+      function drawRoad() {
+        // Road base
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, H - 16, W, 16);
+        // Lane dashes
+        ctx.strokeStyle = 'rgba(255,220,50,0.35)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([12, 10]);
+        ctx.lineDashOffset = -(scrollX * 0.9) % 22;
+        ctx.beginPath();
+        ctx.moveTo(0, H - 8);
+        ctx.lineTo(W, H - 8);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        // Kerb highlight
+        ctx.fillStyle = 'rgba(56,189,248,0.25)';
+        ctx.fillRect(0, H - 17, W, 2);
+      }
+
+      function drawPlane() {
+        plane.x += plane.spd;
+        if (plane.x > W + 160) { plane.x = -160; plane.y = H * 0.1 + seededRand(frame, 42) * H * 0.2; }
+        // Contrail
+        plane.trail.push({ x: plane.x, y: plane.y, a: 0.55 });
+        if (plane.trail.length > 80) plane.trail.shift();
+        plane.trail.forEach((t, i) => {
+          t.a = Math.max(0, t.a - 0.007);
+          ctx.fillStyle = `rgba(255,255,255,${t.a * (i / plane.trail.length)})`;
+          const r = 1.5 * (i / plane.trail.length);
+          ctx.beginPath();
+          ctx.arc(t.x, t.y, r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        // Plane body
+        ctx.save();
+        ctx.translate(plane.x, plane.y);
+        ctx.fillStyle = '#e0f2fe';
+        ctx.shadowColor = 'rgba(255,255,255,0.6)';
+        ctx.shadowBlur = 8;
+        // Fuselage
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 18, 4, 0, 0, Math.PI * 2);
+        ctx.fill();
+        // Wings
+        ctx.beginPath();
+        ctx.moveTo(-4, 0); ctx.lineTo(6, -12); ctx.lineTo(10, 0); ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(-4, 0); ctx.lineTo(6, 12); ctx.lineTo(10, 0); ctx.closePath();
+        ctx.fill();
+        // Tail
+        ctx.beginPath();
+        ctx.moveTo(-14, 0); ctx.lineTo(-10, -7); ctx.lineTo(-8, 0); ctx.closePath();
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.restore();
+      }
+
+      function drawGround() {
+        // Ground base — dark strip
+        ctx.fillStyle = '#0c1a0e';
+        ctx.fillRect(0, H - 28, W, 12);
+        // Soft grass shimmer
+        const gGrad = ctx.createLinearGradient(0, H - 28, 0, H - 16);
+        gGrad.addColorStop(0, 'rgba(34,197,94,0.18)');
+        gGrad.addColorStop(1, 'rgba(34,197,94,0.04)');
+        ctx.fillStyle = gGrad;
+        ctx.fillRect(0, H - 28, W, 12);
+      }
+
+      function drawVignette() {
+        const vig = ctx.createRadialGradient(W/2, H/2, H*0.15, W/2, H/2, H*0.85);
+        vig.addColorStop(0, 'rgba(0,0,0,0)');
+        vig.addColorStop(1, 'rgba(0,10,20,0.7)');
+        ctx.fillStyle = vig;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      function tick() {
+        W = c.width; H = c.height;
+
+        // Advance scroll — loop seamlessly
+        scrollX = (scrollX + SCROLL_SPEED) % CITY_W;
+
+        drawSky();
+
+        // Back clouds (slow)
+        clouds.filter(cl => cl.spd <= 0.08).forEach(drawCloud);
+
+        drawPlane();
+
+        // Front clouds (faster)
+        clouds.filter(cl => cl.spd > 0.08).forEach(drawCloud);
+
+        // Buildings
+        buildings.forEach((b, i) => drawBuilding(b, i));
+        // Wrap-around copy for seamless loop
+        buildings.forEach((b, i) => {
+          const wrapped = { ...b, x: b.x + CITY_W };
+          drawBuilding(wrapped, i);
+        });
+
+        drawGround();
+        drawRoad();
+        drawVignette();
+
+        frame++;
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+
+    // ── Star Spud card animation ────────────────────────────────
+    (() => {
+      const c = document.getElementById('canvas-starspud');
+      if (!c) return;
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      let W = c.width, H = c.height;
+      let frame = 0;
+
+      // Stars
+      const stars = Array.from({ length: 80 }, () => ({
+        x: Math.random() * W, y: Math.random() * H,
+        r: Math.random() * 1.2 + 0.2,
+        p: Math.random() * Math.PI * 2,
+        s: Math.random() * 0.4 + 0.15
+      }));
+
+      // Enemy blobs
+      const blobs = Array.from({ length: 6 }, (_, i) => ({
+        x: Math.random() * W, y: Math.random() * H,
+        r: 7 + Math.random() * 5,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: (Math.random() - 0.5) * 0.6,
+        col: ['#22c55e','#ef4444','#f97316','#a78bfa','#38bdf8','#f43f5e'][i],
+        p: Math.random() * Math.PI * 2
+      }));
+
+      // Player potato
+      const spud = { x: W / 2, y: H / 2, angle: 0 };
+
+      // XP orbs
+      const orbs = Array.from({ length: 5 }, () => ({
+        x: Math.random() * W, y: Math.random() * H,
+        p: Math.random() * Math.PI * 2
+      }));
+
+      // Projectiles
+      const projectiles = [];
+      let shootTimer = 0;
+
+      function tick() {
+        W = c.width; H = c.height;
+        const t = frame * 0.016;
+
+        // BG
+        ctx.fillStyle = '#060500';
+        ctx.fillRect(0, 0, W, H);
+
+        // Tile grid
+        ctx.strokeStyle = 'rgba(50,38,4,0.2)';
+        ctx.lineWidth = 1;
+        const ts = 32;
+        for (let tx = 0; tx < W; tx += ts) { ctx.beginPath(); ctx.moveTo(tx, 0); ctx.lineTo(tx, H); ctx.stroke(); }
+        for (let ty = 0; ty < H; ty += ts) { ctx.beginPath(); ctx.moveTo(0, ty); ctx.lineTo(W, ty); ctx.stroke(); }
+
+        // Stars
+        stars.forEach(s => {
+          const a = 0.3 + 0.3 * Math.sin(s.p + t * s.s);
+          ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(200,185,140,${a})`; ctx.fill();
+        });
+
+        // XP orbs
+        orbs.forEach(o => {
+          const pulse = 0.8 + 0.2 * Math.sin(t * 4 + o.p);
+          const ox = o.x, oy = o.y + Math.sin(t * 2.5 + o.p) * 3;
+          const grd = ctx.createRadialGradient(ox, oy, 0, ox, oy, 6 * pulse);
+          grd.addColorStop(0, '#ddd6fe'); grd.addColorStop(1, 'rgba(109,40,217,0)');
+          ctx.beginPath(); ctx.arc(ox, oy, 6 * pulse, 0, Math.PI * 2);
+          ctx.fillStyle = grd; ctx.shadowColor = '#a78bfa'; ctx.shadowBlur = 8;
+          ctx.fill(); ctx.shadowBlur = 0;
+        });
+
+        // Enemy blobs
+        blobs.forEach(b => {
+          b.x += b.vx; b.y += b.vy;
+          if (b.x < b.r || b.x > W - b.r) b.vx *= -1;
+          if (b.y < b.r || b.y > H - b.r) b.vy *= -1;
+
+          // Shadow
+          ctx.save(); ctx.globalAlpha = 0.3;
+          ctx.fillStyle = '#000';
+          ctx.beginPath(); ctx.ellipse(b.x, b.y + b.r * 0.7, b.r * 0.75, b.r * 0.2, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.restore();
+
+          // Wobbly body
+          ctx.beginPath();
+          for (let i = 0; i < 8; i++) {
+            const a = i / 8 * Math.PI * 2;
+            const rd = b.r * (1 + 0.15 * Math.sin(a * 3 + t * 4 + b.p));
+            if (i === 0) ctx.moveTo(b.x + Math.cos(a) * rd, b.y + Math.sin(a) * rd);
+            else ctx.lineTo(b.x + Math.cos(a) * rd, b.y + Math.sin(a) * rd);
+          }
+          ctx.closePath();
+          const g = ctx.createRadialGradient(b.x - b.r * 0.2, b.y - b.r * 0.2, 0, b.x, b.y, b.r);
+          g.addColorStop(0, '#fff'); g.addColorStop(0.4, b.col); g.addColorStop(1, 'rgba(0,0,0,0.5)');
+          ctx.fillStyle = g; ctx.shadowColor = b.col; ctx.shadowBlur = 6; ctx.fill(); ctx.shadowBlur = 0;
+          // Eyes
+          ctx.fillStyle = 'rgba(0,0,0,0.7)';
+          ctx.beginPath(); ctx.arc(b.x - b.r * 0.27, b.y - b.r * 0.2, b.r * 0.2, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(b.x + b.r * 0.27, b.y - b.r * 0.2, b.r * 0.2, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#fff';
+          ctx.beginPath(); ctx.arc(b.x - b.r * 0.23, b.y - b.r * 0.22, b.r * 0.08, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(b.x + b.r * 0.31, b.y - b.r * 0.22, b.r * 0.08, 0, Math.PI * 2); ctx.fill();
+          // HP bar
+          ctx.fillStyle = '#141008'; ctx.fillRect(b.x - b.r, b.y - b.r - 8, b.r * 2, 3);
+          ctx.fillStyle = '#22c55e'; ctx.fillRect(b.x - b.r, b.y - b.r - 8, b.r * 1.4, 3);
+        });
+
+        // Spud movement (gentle figure-8)
+        spud.x = W / 2 + Math.cos(t * 0.5) * W * 0.22;
+        spud.y = H / 2 + Math.sin(t * 1.0) * H * 0.18;
+
+        // Auto-shoot toward nearest blob
+        shootTimer--;
+        if (shootTimer <= 0) {
+          shootTimer = 18;
+          let nearest = null, nearD = Infinity;
+          blobs.forEach(b => {
+            const d = Math.hypot(b.x - spud.x, b.y - spud.y);
+            if (d < nearD) { nearD = d; nearest = b; }
+          });
+          if (nearest) {
+            const a = Math.atan2(nearest.y - spud.y, nearest.x - spud.x);
+            projectiles.push({ x: spud.x, y: spud.y, vx: Math.cos(a) * 4.5, vy: Math.sin(a) * 4.5, life: 1 });
+          }
+        }
+
+        // Projectiles
+        for (let i = projectiles.length - 1; i >= 0; i--) {
+          const pr = projectiles[i];
+          pr.x += pr.vx; pr.y += pr.vy; pr.life -= 0.018;
+          if (pr.life <= 0 || pr.x < 0 || pr.x > W || pr.y < 0 || pr.y > H) { projectiles.splice(i, 1); continue; }
+          const ang = Math.atan2(pr.vy, pr.vx);
+          ctx.save(); ctx.translate(pr.x, pr.y); ctx.rotate(ang);
+          const grd = ctx.createRadialGradient(-2, 0, 0, 0, 0, 5);
+          grd.addColorStop(0, '#fff'); grd.addColorStop(0.4, '#f43f5e'); grd.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.beginPath(); ctx.ellipse(0, 0, 7, 2.5, 0, 0, Math.PI * 2);
+          ctx.fillStyle = grd; ctx.shadowColor = '#f43f5e'; ctx.shadowBlur = 8; ctx.fill(); ctx.shadowBlur = 0;
+          ctx.restore();
+        }
+
+        // Weapon orbit
+        const wAngles = [t * 0.5, t * 0.5 + Math.PI * 0.67, t * 0.5 + Math.PI * 1.33];
+        const wIcons = ['🔫', '🔮', '🔥'];
+        const wCols = ['#fbbf24', '#a78bfa', '#f43f5e'];
+        ctx.save();
+        const orbitR = 20;
+        wAngles.forEach((a, i) => {
+          const wx = spud.x + Math.cos(a) * orbitR;
+          const wy = spud.y + Math.sin(a) * orbitR;
+          ctx.font = '9px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.shadowColor = wCols[i]; ctx.shadowBlur = 6;
+          ctx.fillText(wIcons[i], wx, wy);
+        });
+        ctx.shadowBlur = 0; ctx.restore();
+
+        // Faint orbit ring
+        ctx.save(); ctx.globalAlpha = 0.12;
+        ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(spud.x, spud.y, orbitR, 0, Math.PI * 2); ctx.stroke();
+        ctx.restore();
+
+        // Player shadow
+        ctx.save(); ctx.globalAlpha = 0.4;
+        ctx.fillStyle = '#000';
+        ctx.beginPath(); ctx.ellipse(spud.x, spud.y + 11, 10, 3, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+
+        // Player glow
+        const glowGrd = ctx.createRadialGradient(spud.x, spud.y, 4, spud.x, spud.y, 18);
+        glowGrd.addColorStop(0, 'rgba(244,63,94,0.4)'); glowGrd.addColorStop(1, 'rgba(244,63,94,0)');
+        ctx.beginPath(); ctx.arc(spud.x, spud.y, 18, 0, Math.PI * 2);
+        ctx.fillStyle = glowGrd; ctx.fill();
+
+        // Player potato body
+        ctx.save(); ctx.translate(spud.x, spud.y + Math.sin(t * 5) * 0.8);
+        const bodyGrd = ctx.createRadialGradient(-3, -4, 0, 0, 0, 13);
+        bodyGrd.addColorStop(0, '#fef3c7'); bodyGrd.addColorStop(0.4, '#d97706');
+        bodyGrd.addColorStop(0.8, '#92400e'); bodyGrd.addColorStop(1, '#451a03');
+        ctx.beginPath(); ctx.arc(0, 0, 13, 0, Math.PI * 2);
+        ctx.fillStyle = bodyGrd; ctx.shadowColor = '#f43f5e'; ctx.shadowBlur = 14; ctx.fill(); ctx.shadowBlur = 0;
+        // Spots
+        ctx.fillStyle = 'rgba(69,26,3,0.4)';
+        [[-4,-5,2.2],[5,1,1.8],[-1,5,2.8]].forEach(([ox,oy,sr]) => {
+          ctx.beginPath(); ctx.arc(ox,oy,sr,0,Math.PI*2); ctx.fill();
+        });
+        // Eyes
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(-4, -2, 2.8, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(4, -2, 2.8, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#1c0a00';
+        ctx.beginPath(); ctx.arc(-3.5, -1.8, 1.4, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(3.5, -1.8, 1.4, 0, Math.PI * 2); ctx.fill();
+        // Smile
+        ctx.strokeStyle = 'rgba(69,26,3,0.7)'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(0, 1.5, 3.5, 0.3, 2.84); ctx.stroke();
+        ctx.restore();
+
+        // Vignette
+        const vig = ctx.createRadialGradient(W / 2, H / 2, H * 0.2, W / 2, H / 2, H * 0.8);
+        vig.addColorStop(0, 'rgba(0,0,0,0)'); vig.addColorStop(1, 'rgba(0,0,0,0.65)');
+        ctx.fillStyle = vig; ctx.fillRect(0, 0, W, H);
+
+        frame++;
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+    (() => {
+      const c = document.getElementById('canvas-towerdefense');
+      if (!c) return;
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      let W = c.width, H = c.height;
+
+      // Path waypoints as fractions of canvas size
+      const pathPts = () => [
+        [0, 0.35], [0.22, 0.35], [0.22, 0.65],
+        [0.5, 0.65], [0.5, 0.22], [0.78, 0.22],
+        [0.78, 0.72], [1.05, 0.72]
+      ].map(([fx, fy]) => ({ x: fx * W, y: fy * H }));
+
+      // Towers at fixed spots
+      const towerSpots = [
+        [0.1, 0.18], [0.36, 0.48], [0.62, 0.42], [0.88, 0.50]
+      ];
+
+      // Enemy pool
+      const ENEMY_COLS = ['#408028','#408028','#306018','#6a6a80','#802010'];
+      const ENEMY_SIZES = [5, 5, 7, 6, 9];
+      let enemies = [];
+      let frame = 0;
+
+      function spawnEnemy() {
+        const typeIdx = Math.floor(Math.random() * ENEMY_COLS.length);
+        enemies.push({
+          pathT: 0,
+          speed: 0.0008 + Math.random() * 0.0006,
+          col: ENEMY_COLS[typeIdx],
+          size: ENEMY_SIZES[typeIdx],
+          bobOffset: Math.random() * Math.PI * 2,
+        });
+      }
+
+      function getPosOnPath(t, pts) {
+        const total = pts.length - 1;
+        const seg = Math.min(Math.floor(t * total), total - 1);
+        const frac = (t * total) - seg;
+        const a = pts[seg], b = pts[seg + 1];
+        return { x: a.x + (b.x - a.x) * frac, y: a.y + (b.y - a.y) * frac };
+      }
+
+      function drawTower(tx, ty) {
+        // Base
+        ctx.fillStyle = '#3a2810';
+        ctx.fillRect(tx - 7, ty - 7, 14, 14);
+        // Stone body
+        ctx.fillStyle = '#6a7080';
+        ctx.fillRect(tx - 5, ty - 14, 10, 14);
+        // Battlements
+        ctx.fillStyle = '#555565';
+        [-4, -1, 2].forEach(ox => ctx.fillRect(tx + ox, ty - 17, 2, 4));
+        // Arrow slit glow
+        ctx.fillStyle = 'rgba(255,180,50,0.6)';
+        ctx.fillRect(tx - 1, ty - 11, 2, 4);
+        // Gold ring
+        ctx.strokeStyle = 'rgba(200,148,26,0.5)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(tx, ty - 7, 12, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      function drawEnemy(e, pts) {
+        const pos = getPosOnPath(e.pathT, pts);
+        const bob = Math.sin(frame * 0.18 + e.bobOffset) * 1.5;
+        ctx.save();
+        ctx.shadowColor = e.col;
+        ctx.shadowBlur = 4;
+        ctx.fillStyle = e.col;
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y + bob, e.size, 0, Math.PI * 2);
+        ctx.fill();
+        // Eyes
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.beginPath();
+        ctx.arc(pos.x - e.size * 0.28, pos.y + bob - e.size * 0.2, e.size * 0.22, 0, Math.PI * 2);
+        ctx.arc(pos.x + e.size * 0.28, pos.y + bob - e.size * 0.2, e.size * 0.22, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.restore();
+      }
+
+      function tick() {
+        W = c.width; H = c.height;
+        const pts = pathPts();
+
+        // Background — dark grass
+        ctx.fillStyle = '#0d1a0a';
+        ctx.fillRect(0, 0, W, H);
+
+        // Grass texture stripes
+        for (let i = 0; i < 6; i++) {
+          ctx.fillStyle = i % 2 === 0 ? 'rgba(30,60,20,0.4)' : 'rgba(20,45,15,0.3)';
+          ctx.fillRect(0, i * H / 6, W, H / 6);
+        }
+
+        // Draw dirt path
+        ctx.strokeStyle = '#6a5030';
+        ctx.lineWidth = 18;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+        ctx.stroke();
+        // Path highlight
+        ctx.strokeStyle = 'rgba(160,120,70,0.35)';
+        ctx.lineWidth = 10;
+        ctx.beginPath();
+        pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+        ctx.stroke();
+
+        // Towers
+        towerSpots.forEach(([fx, fy]) => drawTower(fx * W, fy * H));
+
+        // Spawn enemies
+        if (frame % 55 === 0) spawnEnemy();
+
+        // Update & draw enemies
+        enemies.forEach(e => {
+          e.pathT += e.speed;
+          drawEnemy(e, pts);
+        });
+        enemies = enemies.filter(e => e.pathT < 1);
+
+        // Castle at end
+        const ex = W * 1.0, ey = H * 0.72;
+        ctx.fillStyle = '#2a1a0a';
+        ctx.fillRect(ex - 18, ey - 22, 36, 28);
+        ctx.fillStyle = '#4a3828';
+        [-12, -4, 4, 12].forEach(ox => ctx.fillRect(ex + ox - 3, ey - 28, 6, 8));
+        ctx.fillStyle = 'rgba(255,140,20,0.7)';
+        ctx.shadowColor = 'rgba(255,140,20,0.9)';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(ex - 14, ey - 30, 3, 0, Math.PI * 2);
+        ctx.arc(ex + 14, ey - 30, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Gold vignette
+        const vig = ctx.createRadialGradient(W / 2, H / 2, H * 0.1, W / 2, H / 2, H * 0.8);
+        vig.addColorStop(0, 'rgba(0,0,0,0)');
+        vig.addColorStop(1, 'rgba(5,2,0,0.75)');
+        ctx.fillStyle = vig;
+        ctx.fillRect(0, 0, W, H);
+
+        frame++;
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+
+  
+    // ════════════════════════════════════════════════════════════════
+    // DIAMOND CROWN CASINO — roulette wheel + floating cards + chips
+    // ════════════════════════════════════════════════════════════════
+    (function() {
+      const c = document.getElementById('canvas-casino');
+      if (!c) return;
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      const W = c.width, H = c.height;
+
+      // Felt background
+      const RED_NUMS = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+      const WHEEL_ORDER = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+      const GOLD = '#c9a84c';
+
+      // Wheel params
+      const WCX = W * 0.62, WCY = H * 0.48;
+      const WR = Math.min(W, H) * 0.28;
+      let wheelAngle = 0;
+      let ballAngle = 0;
+
+      // Floating cards
+      const SUITS = ['♠','♥','♦','♣'];
+      const VALS  = ['A','K','Q','J','10','7'];
+      let floatCards = Array.from({length: 6}, (_, i) => ({
+        x: Math.random() * W * 0.45 + W * 0.02,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: -0.3 - Math.random() * 0.4,
+        rot: (Math.random() - 0.5) * 0.3,
+        rotV: (Math.random() - 0.5) * 0.012,
+        suit: SUITS[i % 4],
+        val: VALS[i % 6],
+        red: i % 4 >= 2,
+        alpha: 0.3 + Math.random() * 0.4,
+        w: W * 0.09, h: W * 0.13
+      }));
+
+      // Chips
+      let chips2 = Array.from({length: 8}, (_, i) => ({
+        x: W * 0.08 + (i % 4) * W * 0.09,
+        y: H * 0.72 + Math.floor(i / 4) * H * 0.12,
+        r: W * 0.032,
+        color: ['#cc2222','#2244cc','#228822','#c9a84c','#8822cc','#cc8800','#cc2288','#1a8888'][i],
+        vy: -0.25 - Math.random() * 0.15,
+        phase: Math.random() * Math.PI * 2
+      }));
+
+      let frame2 = 0;
+
+      function drawWheel2() {
+        const n = WHEEL_ORDER.length;
+        const seg = Math.PI * 2 / n;
+
+        // Outer bezel
+        const bez = ctx.createRadialGradient(WCX, WCY, WR * 0.85, WCX, WCY, WR + 8);
+        bez.addColorStop(0, '#3a2a00');
+        bez.addColorStop(1, '#1a1200');
+        ctx.fillStyle = bez;
+        ctx.beginPath(); ctx.arc(WCX, WCY, WR + 8, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = GOLD; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(WCX, WCY, WR + 8, 0, Math.PI * 2); ctx.stroke();
+
+        // Pockets
+        for (let i = 0; i < n; i++) {
+          const a1 = wheelAngle + i * seg, a2 = a1 + seg;
+          const num = WHEEL_ORDER[i];
+          ctx.fillStyle = num === 0 ? '#0d5c0d' : RED_NUMS.has(num) ? '#7a0a0a' : '#0d0d0d';
+          ctx.beginPath(); ctx.moveTo(WCX, WCY); ctx.arc(WCX, WCY, WR, a1, a2); ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = 'rgba(100,80,20,.4)'; ctx.lineWidth = 0.5;
+          ctx.beginPath(); ctx.moveTo(WCX, WCY); ctx.arc(WCX, WCY, WR, a1, a2); ctx.closePath(); ctx.stroke();
+          // Number
+          ctx.save();
+          ctx.translate(WCX, WCY); ctx.rotate(a1 + seg / 2);
+          ctx.translate(WR - WR * 0.15, 0); ctx.rotate(Math.PI / 2);
+          ctx.fillStyle = num === 0 ? '#4eff4e' : '#fff';
+          ctx.font = `bold ${Math.round(WR * 0.12)}px sans-serif`;
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(num, 0, 0);
+          ctx.restore();
+        }
+
+        // Inner hub
+        ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(WCX, WCY, WR * 0.2, 0, Math.PI * 2); ctx.fill();
+        const hg = ctx.createRadialGradient(WCX - WR*0.06, WCY - WR*0.06, 1, WCX, WCY, WR * 0.2);
+        hg.addColorStop(0, '#555'); hg.addColorStop(1, '#1a1a1a');
+        ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(WCX, WCY, WR * 0.18, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = GOLD; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(WCX, WCY, WR * 0.18, 0, Math.PI * 2); ctx.stroke();
+        // Hub bolts
+        for (let b = 0; b < 4; b++) {
+          const ba = b * Math.PI / 2;
+          ctx.fillStyle = '#666';
+          ctx.beginPath(); ctx.arc(WCX + Math.cos(ba) * WR * 0.12, WCY + Math.sin(ba) * WR * 0.12, WR * 0.02, 0, Math.PI * 2); ctx.fill();
+        }
+        // Diamond center
+        ctx.fillStyle = GOLD;
+        ctx.beginPath(); ctx.moveTo(WCX, WCY - WR * 0.07); ctx.lineTo(WCX + WR * 0.05, WCY); ctx.lineTo(WCX, WCY + WR * 0.07); ctx.lineTo(WCX - WR * 0.05, WCY); ctx.closePath(); ctx.fill();
+
+        // Ball
+        const ballR2 = WR - WR * 0.07;
+        const bx = WCX + Math.cos(ballAngle) * ballR2;
+        const by = WCY + Math.sin(ballAngle) * ballR2;
+        ctx.shadowColor = 'rgba(255,255,255,.6)'; ctx.shadowBlur = 6;
+        const bg2 = ctx.createRadialGradient(bx - 1.5, by - 1.5, 1, bx, by, WR * 0.04);
+        bg2.addColorStop(0, '#fff'); bg2.addColorStop(1, '#bbb');
+        ctx.fillStyle = bg2; ctx.beginPath(); ctx.arc(bx, by, WR * 0.038, 0, Math.PI * 2); ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+
+      function drawCard(fc) {
+        ctx.save();
+        ctx.translate(fc.x, fc.y);
+        ctx.rotate(fc.rot);
+        ctx.globalAlpha = fc.alpha;
+        ctx.fillStyle = '#f5f0e8';
+        ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 6;
+        ctx.beginPath(); ctx.roundRect(-fc.w/2, -fc.h/2, fc.w, fc.h, fc.w * 0.08); ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = fc.red ? '#cc1111' : '#111';
+        ctx.font = `bold ${fc.w * 0.3}px serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(fc.val, 0, -fc.h * 0.18);
+        ctx.font = `${fc.w * 0.35}px serif`;
+        ctx.fillText(fc.suit, 0, fc.h * 0.15);
+        ctx.restore();
+      }
+
+      function drawChip(chip) {
+        const bob = Math.sin(frame2 * 0.03 + chip.phase) * H * 0.025;
+        const cy2 = chip.y + bob;
+        ctx.save();
+        ctx.globalAlpha = 0.65;
+        // Chip body
+        ctx.fillStyle = chip.color;
+        ctx.shadowColor = chip.color; ctx.shadowBlur = 8;
+        ctx.beginPath(); ctx.arc(chip.x, cy2, chip.r, 0, Math.PI * 2); ctx.fill();
+        ctx.shadowBlur = 0;
+        // Chip ring
+        ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(chip.x, cy2, chip.r * 0.75, 0, Math.PI * 2); ctx.stroke();
+        // Chip dashes
+        ctx.strokeStyle = 'rgba(255,255,255,.2)'; ctx.lineWidth = chip.r * 0.35;
+        for (let d = 0; d < 4; d++) {
+          const da = d * Math.PI / 2;
+          ctx.beginPath();
+          ctx.arc(chip.x, cy2, chip.r * 0.88, da + 0.15, da + 0.65);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      function tick() {
+        frame2++;
+        // Felt background
+        ctx.fillStyle = '#0d1f0d';
+        ctx.fillRect(0, 0, W, H);
+
+        // Felt hexagon pattern (very subtle)
+        ctx.strokeStyle = 'rgba(0,80,0,0.08)'; ctx.lineWidth = 0.5;
+        for (let gy = 0; gy < H; gy += 18) {
+          for (let gx = 0; gx < W; gx += 20) {
+            ctx.beginPath(); ctx.arc(gx + (gy%36===0?10:0), gy, 6, 0, Math.PI*2); ctx.stroke();
+          }
+        }
+
+        // Gold border lines
+        ctx.strokeStyle = 'rgba(201,168,76,.12)'; ctx.lineWidth = 1;
+        ctx.strokeRect(8, 8, W - 16, H - 16);
+        ctx.strokeStyle = 'rgba(201,168,76,.06)'; ctx.lineWidth = 0.5;
+        ctx.strokeRect(14, 14, W - 28, H - 28);
+
+        // Left area label
+        ctx.save();
+        ctx.font = `900 ${W * 0.075}px 'Bebas Neue', sans-serif`;
+        ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+        ctx.fillStyle = 'rgba(201,168,76,.18)';
+        ctx.fillText('DIAMOND', W * 0.03, H * 0.06);
+        ctx.fillText('CROWN', W * 0.03, H * 0.06 + W * 0.085);
+        ctx.font = `600 ${W * 0.038}px 'Bebas Neue', sans-serif`;
+        ctx.fillStyle = 'rgba(201,168,76,.1)';
+        ctx.fillText('CASINO', W * 0.03, H * 0.06 + W * 0.085 * 2 + 2);
+        ctx.restore();
+
+        // Draw floating chips (behind cards, behind wheel)
+        chips2.forEach(drawChip);
+
+        // Draw floating cards
+        floatCards.forEach(fc => {
+          fc.x += fc.vx; fc.y += fc.vy;
+          fc.rot += fc.rotV;
+          if (fc.x < -fc.w) fc.x = W + fc.w;
+          if (fc.x > W + fc.w) fc.x = -fc.w;
+          if (fc.y < -fc.h) { fc.y = H + fc.h; fc.x = Math.random() * W * 0.45; }
+          drawCard(fc);
+        });
+
+        // Spin wheel + ball
+        wheelAngle += 0.004;
+        ballAngle  -= 0.019;
+
+        drawWheel2();
+
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+
+
+    // ════════════════════════════════════════════════════════════════
+    // PIXELPAL — falling pixel grid + colour splashes
+    // ════════════════════════════════════════════════════════════════
+    (function() {
+      const c = document.getElementById('canvas-pixelpal');
+      if (!c) return;
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      const W = c.width, H = c.height;
+      const CELL = Math.max(8, Math.floor(W / 22));
+      const COLS_G = Math.ceil(W / CELL), ROWS_G = Math.ceil(H / CELL);
+      const PALS = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#c77dff','#ff9a3c','#ff80ab','#00bcd4'];
+
+      const grid = Array.from({ length: COLS_G * ROWS_G }, () => ({
+        color: PALS[Math.floor(Math.random() * PALS.length)],
+        alpha: Math.random() * 0.35,
+        speed: 0.004 + Math.random() * 0.008,
+        dir: Math.random() > 0.5 ? 1 : -1,
+      }));
+
+      const splats = Array.from({ length: 6 }, (_, i) => ({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.5,
+        r: CELL * (1.2 + Math.random() * 1.8),
+        color: PALS[i % PALS.length],
+        alpha: 0.08 + Math.random() * 0.12,
+        phase: Math.random() * Math.PI * 2,
+      }));
+
+      const drops = Array.from({ length: 10 }, () => ({
+        x: Math.floor(Math.random() * COLS_G) * CELL,
+        y: -CELL * Math.floor(Math.random() * 4),
+        vy: 0.8 + Math.random() * 1.2,
+        color: PALS[Math.floor(Math.random() * PALS.length)],
+        size: CELL, alpha: 0.7 + Math.random() * 0.3,
+      }));
+
+      let frame = 0;
+      function tick() {
+        frame++;
+        ctx.fillStyle = '#0f0a06';
+        ctx.fillRect(0, 0, W, H);
+
+        grid.forEach((px, i) => {
+          px.alpha += px.speed * px.dir;
+          if (px.alpha >= 0.35) { px.alpha = 0.35; px.dir = -1; }
+          if (px.alpha <= 0) { px.alpha = 0; px.dir = 1; px.color = PALS[Math.floor(Math.random() * PALS.length)]; }
+          const gx = (i % COLS_G) * CELL, gy = Math.floor(i / COLS_G) * CELL;
+          ctx.globalAlpha = px.alpha; ctx.fillStyle = px.color;
+          ctx.fillRect(gx + 1, gy + 1, CELL - 2, CELL - 2);
+        });
+
+        splats.forEach(s => {
+          s.phase += 0.018; s.x += s.vx; s.y += s.vy;
+          if (s.x < -s.r) s.x = W + s.r; if (s.x > W + s.r) s.x = -s.r;
+          if (s.y < -s.r) s.y = H + s.r; if (s.y > H + s.r) s.y = -s.r;
+          ctx.globalAlpha = s.alpha + Math.sin(s.phase) * 0.04;
+          ctx.fillStyle = s.color;
+          ctx.beginPath(); ctx.arc(s.x, s.y, s.r + Math.sin(s.phase) * 3, 0, Math.PI * 2); ctx.fill();
+        });
+
+        drops.forEach(d => {
+          d.y += d.vy;
+          if (d.y > H + CELL) { d.y = -CELL; d.x = Math.floor(Math.random() * COLS_G) * CELL; d.color = PALS[Math.floor(Math.random() * PALS.length)]; }
+          ctx.globalAlpha = d.alpha; ctx.fillStyle = d.color;
+          ctx.shadowColor = d.color; ctx.shadowBlur = 8;
+          ctx.fillRect(d.x + 1, d.y + 1, d.size - 2, d.size - 2);
+          ctx.shadowBlur = 0;
+        });
+
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = 'rgba(255,107,107,0.06)'; ctx.lineWidth = 0.5;
+        for (let x = 0; x <= W; x += CELL) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+        for (let y = 0; y <= H; y += CELL) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+        ctx.globalAlpha = 0.18 + Math.sin(frame * 0.022) * 0.05;
+        ctx.font = `700 ${W * 0.13}px 'Bebas Neue', sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#ff6b6b';
+        ctx.fillText('PIXELPAL', W / 2, H / 2);
+        ctx.globalAlpha = 1;
+
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+
+
+    // ════════════════════════════════════════════════════════════════
+    // NEXUS CHAT — floating bubbles + pulse rings
+    // ════════════════════════════════════════════════════════════════
+    (function() {
+      const c = document.getElementById('canvas-nexus');
+      if (!c) return;
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      const W = c.width, H = c.height;
+      const COLS = ['#5c87f5','#a87fff','#3ecf8e','#f07c42','#f5c842'];
+
+      const bubbles = Array.from({length: 8}, (_, i) => ({
+        x: Math.random() * W * 0.75 + W * 0.05,
+        y: Math.random() * H,
+        vy: -(0.22 + Math.random() * 0.28),
+        vx: (Math.random() - 0.5) * 0.18,
+        w: W * (0.15 + Math.random() * 0.32),
+        h: H * 0.1,
+        color: COLS[i % COLS.length],
+        alpha: 0.1 + Math.random() * 0.18,
+      }));
+
+      const rings = [0, 0.25, 0.5, 0.75].map((offset, i) => ({
+        r: offset * Math.min(W, H) * 0.5,
+        max: Math.min(W, H) * 0.5,
+        speed: 0.45 + i * 0.12,
+        color: COLS[i % COLS.length],
+      }));
+
+      const avatars = Array.from({length: 5}, (_, i) => ({
+        x: W * 0.12 + (i / 4) * W * 0.76,
+        baseY: H * 0.38,
+        phase: i * (Math.PI * 2 / 5),
+        r: Math.min(W, H) * 0.048,
+        color: COLS[i % COLS.length],
+        label: 'AJSRM'[i],
+      }));
+
+      let frame = 0;
+      function tick() {
+        frame++;
+        ctx.fillStyle = '#08081a';
+        ctx.fillRect(0, 0, W, H);
+
+        // Grid
+        ctx.strokeStyle = 'rgba(108,143,255,0.035)';
+        ctx.lineWidth = 0.5;
+        for (let x = 0; x < W; x += 28) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+        for (let y = 0; y < H; y += 28) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+        // Pulse rings
+        rings.forEach(ring => {
+          ring.r += ring.speed;
+          if (ring.r > ring.max) ring.r = 0;
+          ctx.globalAlpha = (1 - ring.r / ring.max) * 0.15;
+          ctx.strokeStyle = ring.color;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.arc(W/2, H/2, ring.r, 0, Math.PI*2);
+          ctx.stroke();
+        });
+        ctx.globalAlpha = 1;
+
+        // Bubbles
+        bubbles.forEach(b => {
+          b.x += b.vx; b.y += b.vy;
+          if (b.y + b.h < 0) { b.y = H + b.h; b.x = Math.random() * W * 0.75 + W * 0.05; }
+          if (b.x < 0 || b.x + b.w > W) b.vx *= -1;
+          ctx.globalAlpha = b.alpha;
+          ctx.fillStyle = b.color;
+          ctx.beginPath();
+          ctx.roundRect(b.x, b.y, b.w, b.h, 6);
+          ctx.fill();
+          ctx.fillStyle = 'rgba(255,255,255,0.22)';
+          ctx.fillRect(b.x + 8, b.y + b.h * 0.27, b.w * 0.5, 2.5);
+          ctx.fillRect(b.x + 8, b.y + b.h * 0.57, b.w * 0.32, 2.5);
+        });
+        ctx.globalAlpha = 1;
+
+        // Avatars
+        avatars.forEach(av => {
+          av.phase += 0.009;
+          const ay = av.baseY + Math.sin(av.phase) * H * 0.045;
+          ctx.shadowColor = av.color; ctx.shadowBlur = 14;
+          ctx.fillStyle = av.color; ctx.globalAlpha = 0.9;
+          ctx.beginPath(); ctx.arc(av.x, ay, av.r, 0, Math.PI*2); ctx.fill();
+          ctx.shadowBlur = 0; ctx.globalAlpha = 1;
+          ctx.fillStyle = '#fff';
+          ctx.font = `bold ${av.r}px Barlow, sans-serif`;
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(av.label, av.x, ay);
+        });
+
+        // Centre glow + wordmark
+        const g = ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W*0.2);
+        g.addColorStop(0,'rgba(108,143,255,0.22)'); g.addColorStop(1,'rgba(108,143,255,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(W/2,H/2,W*0.2,0,Math.PI*2); ctx.fill();
+
+        ctx.globalAlpha = 0.3 + Math.sin(frame*0.025)*0.07;
+        ctx.font = `900 ${W*0.14}px 'Bebas Neue', sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#6c8fff';
+        ctx.fillText('NEXUS', W/2, H/2);
+        ctx.globalAlpha = 1;
+
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+
+
+    // ════════════════════════════════════════════════════════════════
+    // PARTY VAULT — floating game icons + confetti bursts
+    // ════════════════════════════════════════════════════════════════
+    (function() {
+      const c = document.getElementById('canvas-partyvault');
+      if (!c) return;
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      const W = c.width, H = c.height;
+
+      const ICONS = ['🎲','🎮','🏆','⚡','🎨','🤥','🥊','🌊'];
+      const COLS  = ['#ff4fc8','#a87fff','#4fc3f7','#fbbf24','#34d399','#f97316'];
+
+      // Floating icons
+      const icons = ICONS.map((icon, i) => ({
+        icon,
+        x: Math.random() * W * 0.8 + W * 0.1,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.7,
+        vy: (Math.random() - 0.5) * 0.5,
+        size: W * (0.07 + Math.random() * 0.06),
+        phase: Math.random() * Math.PI * 2,
+        rot: Math.random() * Math.PI * 2,
+        rotV: (Math.random() - 0.5) * 0.018,
+      }));
+
+      // Confetti particles
+      const confetti = Array.from({length: 28}, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vy: 0.4 + Math.random() * 0.6,
+        vx: (Math.random() - 0.5) * 0.4,
+        w: 5 + Math.random() * 6,
+        h: 3 + Math.random() * 3,
+        rot: Math.random() * Math.PI,
+        rotV: (Math.random() - 0.5) * 0.06,
+        color: COLS[Math.floor(Math.random() * COLS.length)],
+        alpha: 0.15 + Math.random() * 0.35,
+      }));
+
+      // Pulse circles behind
+      const pulses = [0, 0.33, 0.66].map((off, i) => ({
+        r: off * Math.min(W, H) * 0.55,
+        max: Math.min(W, H) * 0.55,
+        speed: 0.5 + i * 0.15,
+        color: COLS[i],
+      }));
+
+      let frame = 0;
+      function tick() {
+        frame++;
+        // Background
+        ctx.fillStyle = '#100820';
+        ctx.fillRect(0, 0, W, H);
+
+        // Subtle grid
+        ctx.strokeStyle = 'rgba(255,79,200,0.04)';
+        ctx.lineWidth = 0.5;
+        for (let x = 0; x < W; x += 24) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+        for (let y = 0; y < H; y += 24) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+        // Pulse rings
+        pulses.forEach(p => {
+          p.r += p.speed;
+          if (p.r > p.max) p.r = 0;
+          ctx.globalAlpha = (1 - p.r / p.max) * 0.12;
+          ctx.strokeStyle = p.color;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.arc(W/2, H/2, p.r, 0, Math.PI*2); ctx.stroke();
+        });
+        ctx.globalAlpha = 1;
+
+        // Confetti
+        confetti.forEach(cf => {
+          cf.x += cf.vx; cf.y += cf.vy; cf.rot += cf.rotV;
+          if (cf.y > H + 10) { cf.y = -10; cf.x = Math.random() * W; }
+          ctx.save();
+          ctx.globalAlpha = cf.alpha;
+          ctx.translate(cf.x, cf.y);
+          ctx.rotate(cf.rot);
+          ctx.fillStyle = cf.color;
+          ctx.fillRect(-cf.w/2, -cf.h/2, cf.w, cf.h);
+          ctx.restore();
+        });
+        ctx.globalAlpha = 1;
+
+        // Floating icons
+        icons.forEach(ic => {
+          ic.x += ic.vx; ic.y += ic.vy;
+          ic.phase += 0.016; ic.rot += ic.rotV;
+          if (ic.x < -ic.size) ic.x = W + ic.size;
+          if (ic.x > W + ic.size) ic.x = -ic.size;
+          if (ic.y < -ic.size) ic.y = H + ic.size;
+          if (ic.y > H + ic.size) ic.y = -ic.size;
+          ctx.save();
+          ctx.translate(ic.x, ic.y + Math.sin(ic.phase) * 4);
+          ctx.rotate(ic.rot);
+          ctx.globalAlpha = 0.55 + Math.sin(ic.phase) * 0.15;
+          ctx.font = `${ic.size}px serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(ic.icon, 0, 0);
+          ctx.restore();
+        });
+        ctx.globalAlpha = 1;
+
+        // Centre glow
+        const g = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, W * 0.28);
+        g.addColorStop(0, 'rgba(255,79,200,0.18)');
+        g.addColorStop(0.5, 'rgba(168,127,255,0.08)');
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(W/2, H/2, W * 0.28, 0, Math.PI*2); ctx.fill();
+
+        // Wordmark
+        ctx.globalAlpha = 0.22 + Math.sin(frame * 0.022) * 0.06;
+        ctx.font = `900 ${W * 0.13}px 'Bebas Neue', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#ff4fc8';
+        ctx.fillText('PARTY VAULT', W / 2, H / 2);
+        ctx.globalAlpha = 1;
+
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+
+    // ════════════════════════════════════════════════════════════════
+    // SANDBOXELS — falling sand particles + element interactions
+    // ════════════════════════════════════════════════════════════════
+    (function() {
+      const c = document.getElementById('canvas-sandboxels');
+      if (!c) return;
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      const W = c.width, H = c.height;
+
+      const ELEMENTS = [
+        { color: '#e8c97a', label: 'SAND',  count: 18 },
+        { color: '#3b82f6', label: 'WATER', count: 12 },
+        { color: '#f97316', label: 'FIRE',  count: 10 },
+        { color: '#ef4444', label: 'LAVA',  count: 6  },
+        { color: '#6b7280', label: 'STONE', count: 8  },
+      ];
+
+      const particles = [];
+      ELEMENTS.forEach(el => {
+        for (let i = 0; i < el.count; i++) {
+          particles.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            vy: 0.3 + Math.random() * 0.7,
+            vx: (Math.random() - 0.5) * 0.3,
+            size: 4 + Math.random() * 5,
+            color: el.color,
+            label: el.label,
+            alpha: 0.6 + Math.random() * 0.4,
+            phase: Math.random() * Math.PI * 2,
+          });
+        }
+      });
+
+      // Floating element labels
+      const labels = ELEMENTS.map((el, i) => ({
+        text: el.label,
+        color: el.color,
+        x: W * (0.12 + i * 0.19),
+        y: H * (0.2 + Math.random() * 0.5),
+        vy: -(0.15 + Math.random() * 0.1),
+        alpha: 0.18 + Math.random() * 0.1,
+        phase: Math.random() * Math.PI * 2,
+      }));
+
+      let frame = 0;
+      function tick() {
+        frame++;
+        // Dark sandy background
+        ctx.fillStyle = '#0f0a04';
+        ctx.fillRect(0, 0, W, H);
+
+        // Subtle grid
+        ctx.strokeStyle = 'rgba(249,115,22,0.04)';
+        ctx.lineWidth = 0.5;
+        for (let x = 0; x < W; x += 20) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+        for (let y = 0; y < H; y += 20) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+        // Floating element labels
+        labels.forEach(lb => {
+          lb.phase += 0.012;
+          lb.y += lb.vy;
+          if (lb.y < -20) lb.y = H + 20;
+          ctx.globalAlpha = lb.alpha + Math.sin(lb.phase) * 0.04;
+          ctx.font = `700 ${W * 0.055}px 'Bebas Neue', sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.fillStyle = lb.color;
+          ctx.fillText(lb.text, lb.x, lb.y);
+        });
+        ctx.globalAlpha = 1;
+
+        // Particles
+        particles.forEach(p => {
+          p.phase += 0.02;
+          p.x += p.vx + Math.sin(p.phase) * 0.15;
+          p.y += p.vy;
+          if (p.y > H + p.size) { p.y = -p.size; p.x = Math.random() * W; }
+          if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+
+          ctx.globalAlpha = p.alpha;
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = 6;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+          ctx.shadowBlur = 0;
+        });
+        ctx.globalAlpha = 1;
+
+        // Centre glow
+        const g = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, W * 0.3);
+        g.addColorStop(0, 'rgba(249,115,22,0.14)');
+        g.addColorStop(0.5, 'rgba(250,204,21,0.06)');
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(W/2, H/2, W * 0.3, 0, Math.PI*2); ctx.fill();
+
+        // Wordmark
+        ctx.globalAlpha = 0.2 + Math.sin(frame * 0.02) * 0.05;
+        ctx.font = `900 ${W * 0.115}px 'Bebas Neue', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#f97316';
+        ctx.fillText('SANDBOXELS', W/2, H/2);
+        ctx.globalAlpha = 1;
+        ctx.textBaseline = 'alphabetic';
+
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+
+    // ════════════════════════════════════════════════════════════════
+    // FLAPSY BIRD — animated bird dodging pipes
+    // ════════════════════════════════════════════════════════════════
+    (function() {
+      const c = document.getElementById('canvas-flapsybird');
+      if (!c) return;
+      fitCanvas(c);
+      const ctx = c.getContext('2d');
+      const W = c.width, H = c.height;
+
+      // Sky gradient colours
+      const skyTop = '#0a1628', skyBot = '#1a3a5c';
+
+      // Bird state
+      let bird = { x: W * 0.28, y: H * 0.5, vy: 0, r: Math.min(W, H) * 0.055 };
+      const GRAVITY = H * 2.2;
+      const FLAP = -H * 0.55;
+      let flapTimer = 0, flapInterval = 1.4;
+
+      // Pipes
+      const GAP = H * 0.34;
+      const PIPE_W = W * 0.13;
+      const SPEED = W * 0.28;
+      let pipes = [
+        { x: W * 0.75, gapY: H * 0.28 },
+        { x: W * 1.25, gapY: H * 0.52 },
+      ];
+
+      // Clouds
+      let clouds = [
+        { x: W * 0.1,  y: H * 0.15, s: 0.55, vx: 0.18 },
+        { x: W * 0.55, y: H * 0.25, s: 0.45, vx: 0.12 },
+        { x: W * 0.85, y: H * 0.1,  s: 0.38, vx: 0.15 },
+      ];
+
+      let last = performance.now();
+      let frame = 0;
+
+      function drawCloud(cx, cy, sc) {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(sc, sc);
+        ctx.fillStyle = 'rgba(255,255,255,0.12)';
+        ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(22, 4, 16, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(-18, 5, 14, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(8, -9, 17, 0, Math.PI*2); ctx.fill();
+        ctx.fillRect(-32, 0, 72, 18);
+        ctx.restore();
+      }
+
+      function drawPipe(px, gapY) {
+        const topH = gapY;
+        const botY = gapY + GAP;
+        const botH = H - botY;
+        const capH = H * 0.045, capW = PIPE_W + W * 0.03, capX = px - W * 0.015;
+
+        // Top pipe
+        ctx.fillStyle = '#2d7a3a';
+        ctx.fillRect(px, 0, PIPE_W, topH);
+        ctx.fillStyle = 'rgba(255,255,255,0.07)';
+        ctx.fillRect(px + PIPE_W * 0.12, 0, PIPE_W * 0.18, topH);
+        ctx.fillStyle = '#3a9e4a';
+        ctx.fillRect(capX, topH - capH, capW, capH);
+
+        // Bottom pipe
+        ctx.fillStyle = '#2d7a3a';
+        ctx.fillRect(px, botY, PIPE_W, botH);
+        ctx.fillStyle = 'rgba(255,255,255,0.07)';
+        ctx.fillRect(px + PIPE_W * 0.12, botY, PIPE_W * 0.18, botH);
+        ctx.fillStyle = '#3a9e4a';
+        ctx.fillRect(capX, botY, capW, capH);
+      }
+
+      function drawBird(bx, by, tilt) {
+        const R = bird.r;
+        ctx.save();
+        ctx.translate(bx, by);
+        ctx.rotate(tilt);
+
+        // Wing
+        ctx.fillStyle = '#d4b800';
+        ctx.beginPath();
+        ctx.ellipse(-R*0.3, R*0.25, R*0.65, R*0.32, -0.3, 0, Math.PI*2);
+        ctx.fill();
+
+        // Body
+        const g = ctx.createRadialGradient(-R*0.2, -R*0.2, R*0.1, 0, 0, R);
+        g.addColorStop(0, '#fff176');
+        g.addColorStop(1, '#FFEB3B');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI*2); ctx.fill();
+        ctx.strokeStyle = '#d4a800'; ctx.lineWidth = 1.2; ctx.stroke();
+
+        // Belly
+        ctx.fillStyle = '#FFFDE7';
+        ctx.beginPath(); ctx.ellipse(R*0.22, R*0.28, R*0.48, R*0.42, 0.15, 0, Math.PI*2); ctx.fill();
+
+        // Eye white
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(R*0.38, -R*0.18, R*0.33, 0, Math.PI*2); ctx.fill();
+        // Pupil
+        ctx.fillStyle = '#1a1a2e';
+        ctx.beginPath(); ctx.arc(R*0.47, -R*0.16, R*0.17, 0, Math.PI*2); ctx.fill();
+        // Shine
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.beginPath(); ctx.arc(R*0.51, -R*0.24, R*0.07, 0, Math.PI*2); ctx.fill();
+
+        // Beak
+        ctx.fillStyle = '#FF6B35';
+        ctx.beginPath();
+        ctx.moveTo(R*0.7, -R*0.06);
+        ctx.lineTo(R*1.3, R*0.1);
+        ctx.lineTo(R*0.7, R*0.26);
+        ctx.closePath(); ctx.fill();
+
+        ctx.restore();
+      }
+
+      function tick(now) {
+        const dt = Math.min((now - last) / 1000, 0.05);
+        last = now;
+        frame++;
+
+        // Auto flap
+        flapTimer += dt;
+        if (flapTimer >= flapInterval) {
+          flapTimer = 0;
+          flapInterval = 1.0 + Math.random() * 0.8;
+          bird.vy = FLAP;
+        }
+
+        // Physics
+        bird.vy += GRAVITY * dt;
+        bird.y += bird.vy * dt;
+        if (bird.y > H * 0.85) { bird.y = H * 0.85; bird.vy = FLAP * 0.7; }
+        if (bird.y < bird.r)   { bird.y = bird.r; bird.vy = 0; }
+
+        // Move pipes
+        pipes.forEach(p => { p.x -= SPEED * dt; });
+        pipes.forEach(p => { if (p.x + PIPE_W < 0) { p.x = W + PIPE_W; p.gapY = H * (0.2 + Math.random() * 0.45); } });
+
+        // Move clouds
+        clouds.forEach(cl => { cl.x -= cl.vx; if (cl.x < -80) cl.x = W + 80; });
+
+        // ── Draw ──
+        // Sky
+        const sky = ctx.createLinearGradient(0, 0, 0, H);
+        sky.addColorStop(0, skyTop); sky.addColorStop(1, skyBot);
+        ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+
+        // Stars
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        for (let i = 0; i < 18; i++) {
+          const sx = ((i * 137 + frame * 0.05) % W);
+          const sy = (i * 73) % (H * 0.6);
+          const sr = 0.5 + (Math.sin(frame * 0.04 + i) * 0.3);
+          ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI*2); ctx.fill();
+        }
+
+        // Clouds
+        clouds.forEach(cl => drawCloud(cl.x, cl.y, cl.s));
+
+        // Pipes
+        pipes.forEach(p => drawPipe(p.x, p.gapY));
+
+        // Ground
+        ctx.fillStyle = '#1a3d1a';
+        ctx.fillRect(0, H * 0.88, W, H * 0.12);
+        ctx.fillStyle = '#2d6e2d';
+        ctx.fillRect(0, H * 0.88, W, H * 0.04);
+
+        // Bird tilt
+        const tilt = Math.max(-0.35, Math.min(0.45, bird.vy / (H * 1.2)));
+        drawBird(bird.x, bird.y, tilt);
+
+        // Wordmark
+        ctx.globalAlpha = 0.18 + Math.sin(frame * 0.025) * 0.05;
+        ctx.font = `900 ${W * 0.14}px 'Bebas Neue', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#FFEB3B';
+        ctx.fillText('FLAPSY BIRD', W / 2, H / 2);
+        ctx.globalAlpha = 1;
+        ctx.textBaseline = 'alphabetic';
+
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    })();
+
+    // ════════════════════════════════════════════════════════════════
+    // THEME SWITCHER — wipe animation between tech & cartoon
+    // ════════════════════════════════════════════════════════════════
+    (function() {
+      const body   = document.body;
+      const wipe   = document.getElementById('theme-wipe');
+      const icon   = document.getElementById('toggle-icon');
+      const label  = document.getElementById('toggle-label');
+      let cartoon  = false;
+      let animating = false;
+
+      // Colour the wipe panel to match the destination theme
+      function setWipeColor(toCartoon) {
+        wipe.style.background = toCartoon
+          ? 'radial-gradient(circle at 95% 5%, #FF6B35 0%, #FFF9F0 60%)'
+          : 'radial-gradient(circle at 95% 5%, #e8ff00 0%, #0b0b0f 60%)';
+      }
+
+      window.toggleTheme = function() {
+        if (animating) return;
+        animating = true;
+        const going = !cartoon;
+
+        setWipeColor(going);
+
+        // Step 1 — wipe IN (circle expands from top-right)
+        wipe.style.clipPath = 'circle(0% at 95% 5%)';
+        wipe.style.transition = 'clip-path 0.55s cubic-bezier(0.77, 0, 0.18, 1)';
+        // Force reflow so transition triggers
+        wipe.offsetWidth;
+        wipe.style.clipPath = 'circle(160% at 95% 5%)';
+
+        // Step 2 — at midpoint, swap theme (hidden behind wipe)
+        setTimeout(() => {
+          cartoon = going;
+          body.classList.toggle('cartoon', cartoon);
+          icon.textContent  = cartoon ? '⚡' : '🎨';
+          label.textContent = cartoon ? 'Tech'    : 'Cartoon';
+        }, 300);
+
+        // Step 3 — wipe OUT (circle collapses back)
+        setTimeout(() => {
+          wipe.style.transition = 'clip-path 0.5s cubic-bezier(0.77, 0, 0.18, 1)';
+          wipe.style.clipPath = 'circle(0% at 95% 5%)';
+          setTimeout(() => { animating = false; }, 520);
+        }, 580);
+      };
+    })();
+
+  </script>
+
+</body>
+</html>
